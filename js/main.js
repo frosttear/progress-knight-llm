@@ -1190,15 +1190,25 @@ function resetGameData() {
 
 function importGameData() {
     var importExportBox = document.getElementById("importExportBox")
-    var data = JSON.parse(window.atob(importExportBox.value))
-    gameData = data
-    saveGameData()
-    location.reload()
+    try {
+        var raw = importExportBox.value.trim()
+        var json = decodeURIComponent(escape(window.atob(raw)))
+        var data = JSON.parse(json)
+        gameData = data
+        saveGameData()
+        location.reload()
+    } catch (e) {
+        alert('Import failed: invalid save data.\n' + e.message)
+    }
 }
 
 function exportGameData() {
     var importExportBox = document.getElementById("importExportBox")
-    importExportBox.value = window.btoa(JSON.stringify(gameData))
+    var encoded = window.btoa(unescape(encodeURIComponent(JSON.stringify(gameData))))
+    importExportBox.value = encoded
+    try {
+        navigator.clipboard.writeText(encoded)
+    } catch (e) {}
 }
 
 //Init
