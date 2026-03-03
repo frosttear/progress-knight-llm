@@ -98,6 +98,62 @@ button:focus {
     opacity: 0.8;
 }
 
+.xp-bonus-section {
+    margin-bottom: 12px;
+}
+
+.xp-bonus-header {
+    cursor: pointer;
+    user-select: none;
+    font-size: 14px;
+    padding: 2px 0;
+}
+
+.xp-bonus-toggle {
+    font-size: 10px;
+    display: inline-block;
+    transition: transform 0.2s;
+    margin-left: 4px;
+    color: #888;
+}
+
+.xp-bonus-toggle.open {
+    transform: rotate(90deg);
+}
+
+.xp-breakdown {
+    display: none;
+    padding-left: 12px;
+    margin-bottom: 4px;
+}
+
+.xp-breakdown.open {
+    display: block;
+}
+
+.xp-breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 1px 0;
+    color: #888;
+}
+
+.xp-breakdown-name {
+    flex: 1;
+}
+
+.xp-breakdown-value {
+    text-align: right;
+    min-width: 50px;
+    color: #666;
+}
+
+.xp-breakdown-value.active {
+    color: #55a630;
+    font-weight: bold;
+}
+
 .sidebar-element {
     margin-bottom: 16px;
 }

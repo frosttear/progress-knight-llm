@@ -11,6 +11,10 @@ var gameData = {
     rebirthOneCount: 0,
     rebirthTwoCount: 0,
 
+    storyLog: [],
+    storyEffects: [],
+    storyCredits: 10,
+
     currentJob: null,
     currentSkill: null,
     currentProperty: null,
@@ -28,7 +32,8 @@ const updateSpeed = 20
 
 const baseLifespan = 365 * 70
 
-const baseGameSpeed = 4
+var baseGameSpeed = 4
+var gameSpeedMultiplier = 1
 
 const permanentUnlocks = ["Scheduling", "Shop", "Automation", "Quick task display"]
 
@@ -224,10 +229,12 @@ function addMultipliers() {
         task.xpMultipliers.push(getHappiness)
         task.xpMultipliers.push(getBindedTaskEffect("Dark influence"))
         task.xpMultipliers.push(getBindedTaskEffect("Demon training"))
+        task.xpMultipliers.push((function(tn) { return function() { return getStoryXpMultiplier(tn); } })(taskName))
 
         if (task instanceof Job) {
             task.incomeMultipliers.push(task.getLevelMultiplier.bind(task))
             task.incomeMultipliers.push(getBindedTaskEffect("Demon's wealth"))
+            task.incomeMultipliers.push((function(tn) { return function() { return getStoryIncomeMultiplier(tn); } })(taskName))
             task.xpMultipliers.push(getBindedTaskEffect("Productivity"))
             task.xpMultipliers.push(getBindedItemEffect("Personal squire"))    
         } else if (task instanceof Skill) {
@@ -292,7 +299,7 @@ function setCustomEffects() {
 function getHappiness() {
     var meditationEffect = getBindedTaskEffect("Meditation")
     var butlerEffect = getBindedItemEffect("Butler")
-    var happiness = meditationEffect() * butlerEffect() * gameData.currentProperty.getEffect()
+    var happiness = meditationEffect() * butlerEffect() * gameData.currentProperty.getEffect() * getStoryHappinessBoost()
     return happiness
 }
 
@@ -325,7 +332,7 @@ function getEvilGain() {
 function getGameSpeed() {
     var timeWarping = gameData.taskData["Time warping"]
     var timeWarpingSpeed = gameData.timeWarpingEnabled ? timeWarping.getEffect() : 1
-    var gameSpeed = baseGameSpeed * +!gameData.paused * +isAlive() * timeWarpingSpeed
+    var gameSpeed = baseGameSpeed * gameSpeedMultiplier * +!gameData.paused * +isAlive() * timeWarpingSpeed
     return gameSpeed
 }
 
@@ -414,6 +421,7 @@ function createEntity(data, entity) {
 
 function createRequiredRow(categoryName) {
     var requiredRow = document.getElementsByClassName("requiredRowTemplate")[0].content.firstElementChild.cloneNode(true)
+    requiredRow.innerHTML = requiredRow.innerHTML.replace("Required:", t('required_word'))
     requiredRow.classList.add("requiredRow")
     requiredRow.classList.add(removeSpaces(categoryName))
     requiredRow.id = categoryName
@@ -422,9 +430,19 @@ function createRequiredRow(categoryName) {
 
 function createHeaderRow(templates, categoryType, categoryName) {
     var headerRow = templates.headerRow.content.firstElementChild.cloneNode(true)
-    headerRow.getElementsByClassName("category")[0].textContent = categoryName
+    var ths = headerRow.getElementsByTagName("th")
+    headerRow.getElementsByClassName("category")[0].textContent = tCategory(categoryName)
     if (categoryType != itemCategories) {
-        headerRow.getElementsByClassName("valueType")[0].textContent = categoryType == jobCategories ? "Income/day" : "Effect"
+        if (ths[1]) ths[1].textContent = t('header_level')
+        headerRow.getElementsByClassName("valueType")[0].textContent = categoryType == jobCategories ? t('header_income_day') : t('header_effect')
+        if (ths[3]) ths[3].textContent = t('header_xp_day')
+        if (ths[4]) ths[4].textContent = t('header_xp_left')
+        if (ths[5]) ths[5].textContent = t('header_max_level')
+        if (ths[6]) ths[6].textContent = t('header_skip')
+    } else {
+        if (ths[1]) ths[1].textContent = t('header_active')
+        if (ths[2]) ths[2].textContent = t('header_effect')
+        if (ths[3]) ths[3].textContent = t('header_expense_day')
     }
 
     headerRow.style.backgroundColor = headerRowColors[categoryName]
@@ -437,8 +455,9 @@ function createHeaderRow(templates, categoryType, categoryName) {
 
 function createRow(templates, name, categoryName, categoryType) {
     var row = templates.row.content.firstElementChild.cloneNode(true)
-    row.getElementsByClassName("name")[0].textContent = name
-    row.getElementsByClassName("tooltipText")[0].textContent = tooltips[name]
+    row.getElementsByClassName("name")[0].textContent = tName(name)
+    row.getElementsByClassName("tooltipText")[0].textContent = tTooltip(name)
+
     row.id = "row " + name
     if (categoryType != itemCategories) {
         row.getElementsByClassName("progressBar")[0].onclick = function() {setTask(name)}
@@ -476,7 +495,7 @@ function updateQuickTaskDisplay(taskType) {
     var currentTask = taskType == "job" ? gameData.currentJob : gameData.currentSkill
     var quickTaskDisplayElement = document.getElementById("quickTaskDisplay")
     var progressBar = quickTaskDisplayElement.getElementsByClassName(taskType)[0]
-    progressBar.getElementsByClassName("name")[0].textContent = currentTask.name + " lvl " + currentTask.level
+    progressBar.getElementsByClassName("name")[0].textContent = tName(currentTask.name) + " " + t('lvl_word') + " " + currentTask.level
     progressBar.getElementsByClassName("progressFill")[0].style.width = currentTask.xp / currentTask.getMaxXp() * 100 + "%"
 }
 
@@ -527,13 +546,13 @@ function updateRequiredRows(data, categoryType) {
             if (data == gameData.taskData) {
                 if (requirementObject instanceof EvilRequirement) {
                     evilElement.classList.remove("hiddenTask")
-                    evilElement.textContent = format(requirements[0].requirement) + " evil"
+                    evilElement.textContent = format(requirements[0].requirement) + " " + t('evil_word')
                 } else {
                     levelElement.classList.remove("hiddenTask")
                     for (requirement of requirements) {
                         var task = gameData.taskData[requirement.task]
                         if (task.level >= requirement.requirement) continue
-                        var text = " " + requirement.task + " level " + format(task.level) + "/" + format(requirement.requirement) + ","
+                        var text = " " + tName(requirement.task) + " " + t('level_word') + " " + format(task.level) + "/" + format(requirement.requirement) + ","
                         finalText += text
                     }
                     finalText = finalText.substring(0, finalText.length - 1)
@@ -551,6 +570,7 @@ function updateTaskRows() {
     for (key in gameData.taskData) {
         var task = gameData.taskData[key]
         var row = document.getElementById("row " + task.name)
+        row.getElementsByClassName("name")[0].textContent = tName(task.name)
         row.getElementsByClassName("level")[0].textContent = task.level
         row.getElementsByClassName("xpGain")[0].textContent = format(task.getXpGain())
         row.getElementsByClassName("xpLeft")[0].textContent = format(task.getXpLeft())
@@ -573,7 +593,8 @@ function updateTaskRows() {
         if (task instanceof Job) {
             formatCoins(task.getIncome(), valueElement.getElementsByClassName("income")[0])
         } else {
-            valueElement.getElementsByClassName("effect")[0].textContent = task.getEffectDescription()
+            var desc = task.baseData.description ? tDesc(task.baseData.description) : '';
+            valueElement.getElementsByClassName("effect")[0].textContent = task.getEffectDescription().replace(task.baseData.description, desc)
         }
     }
 }
@@ -587,7 +608,11 @@ function updateItemRows() {
         var active = row.getElementsByClassName("active")[0]
         var color = itemCategories["Properties"].includes(item.name) ? headerRowColors["Properties"] : headerRowColors["Misc"]
         active.style.backgroundColor = gameData.currentMisc.includes(item) || item == gameData.currentProperty ? color : "white"
-        row.getElementsByClassName("effect")[0].textContent = item.getEffectDescription()
+        row.getElementsByClassName("name")[0].textContent = tName(item.name)
+        var itemDesc = item.baseData.description ? tDesc(item.baseData.description) : '';
+        var isProperty = itemCategories["Properties"].includes(item.name);
+        var effectDesc = isProperty ? tDesc('Happiness') : itemDesc;
+        row.getElementsByClassName("effect")[0].textContent = "x" + item.baseData.effect.toFixed(1) + " " + effectDesc
         formatCoins(item.getExpense(), row.getElementsByClassName("expense")[0])
     }
 }
@@ -603,12 +628,138 @@ function updateHeaderRows(categories) {
     }
 }
 
+function getXpBreakdown(task) {
+    var breakdown = []
+    breakdown.push({name: t('xp_max_level_bonus'), value: task.getMaxLevelMultiplier()})
+    breakdown.push({name: tName('Happiness'), value: getHappiness()})
+    breakdown.push({name: tName('Dark influence'), value: gameData.taskData["Dark influence"].getEffect()})
+    breakdown.push({name: tName('Demon training'), value: gameData.taskData["Demon training"].getEffect()})
+    if (typeof getStoryXpMultiplier === 'function') {
+        breakdown.push({name: t('xp_story_bonus'), value: getStoryXpMultiplier(task.name)})
+    }
+    if (task instanceof Job) {
+        breakdown.push({name: tName('Productivity'), value: gameData.taskData["Productivity"].getEffect()})
+        breakdown.push({name: tName('Personal squire'), value: gameData.itemData["Personal squire"].getEffect()})
+        if (jobCategories["Military"].includes(task.name)) {
+            breakdown.push({name: tName('Battle tactics'), value: gameData.taskData["Battle tactics"].getEffect()})
+            breakdown.push({name: tName('Steel longsword'), value: gameData.itemData["Steel longsword"].getEffect()})
+        }
+        if (jobCategories["The Arcane Association"].includes(task.name)) {
+            breakdown.push({name: tName('Mana control'), value: gameData.taskData["Mana control"].getEffect()})
+        }
+    } else if (task instanceof Skill) {
+        breakdown.push({name: tName('Concentration'), value: gameData.taskData["Concentration"].getEffect()})
+        breakdown.push({name: tName('Book'), value: gameData.itemData["Book"].getEffect()})
+        breakdown.push({name: tName('Study desk'), value: gameData.itemData["Study desk"].getEffect()})
+        breakdown.push({name: tName('Library'), value: gameData.itemData["Library"].getEffect()})
+        if (task.name == "Strength") {
+            breakdown.push({name: tName('Muscle memory'), value: gameData.taskData["Muscle memory"].getEffect()})
+            breakdown.push({name: tName('Dumbbells'), value: gameData.itemData["Dumbbells"].getEffect()})
+        }
+        if (skillCategories["Magic"].includes(task.name)) {
+            breakdown.push({name: tName('Sapphire charm'), value: gameData.itemData["Sapphire charm"].getEffect()})
+        }
+        if (skillCategories["Dark magic"].includes(task.name)) {
+            breakdown.push({name: t('sidebar_evil'), value: gameData.evil})
+        }
+    }
+    return breakdown
+}
+
+function toggleXpBreakdown(type) {
+    var panel = document.getElementById(type + 'XpBreakdown')
+    var toggle = document.getElementById(type + 'XpToggle')
+    panel.classList.toggle('open')
+    toggle.classList.toggle('open')
+}
+
+function updateXpBonusDisplay() {
+    var tasks = {job: gameData.currentJob, skill: gameData.currentSkill}
+    for (var type in tasks) {
+        var task = tasks[type]
+        var breakdown = getXpBreakdown(task)
+        var total = 1
+        for (var i = 0; i < breakdown.length; i++) total *= breakdown[i].value
+
+        document.getElementById(type + 'XpTotal').textContent = 'x' + total.toFixed(2)
+
+        var panel = document.getElementById(type + 'XpBreakdown')
+
+        var html = ''
+        for (var i = 0; i < breakdown.length; i++) {
+            var b = breakdown[i]
+            var isActive = b.value != 1
+            html += '<div class="xp-breakdown-row">'
+            html += '<span class="xp-breakdown-name">' + b.name + '</span>'
+            html += '<span class="xp-breakdown-value' + (isActive ? ' active' : '') + '">x' + b.value.toFixed(2) + '</span>'
+            html += '</div>'
+        }
+        panel.innerHTML = html
+    }
+}
+
+function getIncomeBreakdown(job) {
+    var breakdown = []
+    breakdown.push({name: t('income_level_bonus'), value: job.getLevelMultiplier()})
+    breakdown.push({name: tName("Demon's wealth"), value: gameData.taskData["Demon's wealth"].getEffect()})
+    if (typeof getStoryIncomeMultiplier === 'function') {
+        breakdown.push({name: t('income_story_bonus'), value: getStoryIncomeMultiplier(job.name)})
+    }
+    if (jobCategories["Military"].includes(job.name)) {
+        breakdown.push({name: tName('Strength'), value: gameData.taskData["Strength"].getEffect()})
+    }
+    return breakdown
+}
+
+function getExpenseBreakdown() {
+    var breakdown = []
+    breakdown.push({name: tName('Bargaining'), value: gameData.taskData["Bargaining"].getEffect()})
+    breakdown.push({name: tName('Intimidation'), value: gameData.taskData["Intimidation"].getEffect()})
+    return breakdown
+}
+
+function toggleCoinBreakdown(type) {
+    var panel = document.getElementById(type + 'MultBreakdown')
+    var toggle = document.getElementById(type + 'MultToggle')
+    panel.classList.toggle('open')
+    toggle.classList.toggle('open')
+}
+
+function buildBreakdownHTML(breakdown, activeClass) {
+    var html = ''
+    for (var i = 0; i < breakdown.length; i++) {
+        var b = breakdown[i]
+        var isActive = Math.abs(b.value - 1) > 0.001
+        if (!isActive) continue
+        html += '<div class="xp-breakdown-row">'
+        html += '<span class="xp-breakdown-name">' + b.name + '</span>'
+        html += '<span class="xp-breakdown-value active">x' + b.value.toFixed(2) + '</span>'
+        html += '</div>'
+    }
+    return html
+}
+
+function updateCoinBonusDisplay() {
+    var job = gameData.currentJob
+    var incomeBreakdown = getIncomeBreakdown(job)
+    var incomeTotal = 1
+    for (var i = 0; i < incomeBreakdown.length; i++) incomeTotal *= incomeBreakdown[i].value
+    document.getElementById('incomeMultTotal').textContent = 'x' + incomeTotal.toFixed(2)
+    document.getElementById('incomeMultBreakdown').innerHTML = buildBreakdownHTML(incomeBreakdown)
+
+    var expenseBreakdown = getExpenseBreakdown()
+    var expenseTotal = 1
+    for (var i = 0; i < expenseBreakdown.length; i++) expenseTotal *= expenseBreakdown[i].value
+    document.getElementById('expenseMultTotal').textContent = 'x' + expenseTotal.toFixed(2)
+    document.getElementById('expenseMultBreakdown').innerHTML = buildBreakdownHTML(expenseBreakdown)
+}
+
 function updateText() {
     //Sidebar
     document.getElementById("ageDisplay").textContent = daysToYears(gameData.days)
     document.getElementById("dayDisplay").textContent = getDay()
     document.getElementById("lifespanDisplay").textContent = daysToYears(getLifespan())
-    document.getElementById("pauseButton").textContent = gameData.paused ? "Play" : "Pause"
+    document.getElementById("pauseButton").textContent = gameData.paused ? t('sidebar_play') : t('sidebar_pause')
 
     formatCoins(gameData.coins, document.getElementById("coinDisplay"))
     setSignDisplay()
@@ -622,7 +773,10 @@ function updateText() {
     document.getElementById("evilGainDisplay").textContent = getEvilGain().toFixed(1)
 
     document.getElementById("timeWarpingDisplay").textContent = "x" + gameData.taskData["Time warping"].getEffect().toFixed(2)
-    document.getElementById("timeWarpingButton").textContent = gameData.timeWarpingEnabled ? "Disable warp" : "Enable warp"
+    document.getElementById("timeWarpingButton").textContent = gameData.timeWarpingEnabled ? t('sidebar_disable_warp') : t('sidebar_enable_warp')
+
+    updateXpBonusDisplay()
+    updateCoinBonusDisplay()
 }
 
 function setSignDisplay() {
@@ -848,12 +1002,16 @@ function removeSpaces(string) {
 }
 
 function rebirthOne() {
+    if (llmConfig.enabled) generateRebirthReview()
+    clearLifeEffects()
     gameData.rebirthOneCount += 1
 
     rebirthReset()
 }
 
 function rebirthTwo() {
+    if (llmConfig.enabled) generateRebirthReview()
+    clearLifeEffects()
     gameData.rebirthTwoCount += 1
     gameData.evil += getEvilGain()
 
@@ -892,7 +1050,7 @@ function rebirthReset() {
 function getLifespan() {
     var immortality = gameData.taskData["Immortality"]
     var superImmortality = gameData.taskData["Super immortality"]
-    var lifespan = baseLifespan * immortality.getEffect() * superImmortality.getEffect()
+    var lifespan = baseLifespan * immortality.getEffect() * superImmortality.getEffect() * getStoryLifespanMultiplier()
     return lifespan
 }
 
@@ -1007,7 +1165,9 @@ function updateUI() {
     updateQuickTaskDisplay("job")
     updateQuickTaskDisplay("skill")
     hideEntities()
-    updateText()  
+    updateText()
+    updateMilestoneIndicator()
+    updateCreditDisplay()
 }
 
 function update() {
@@ -1040,6 +1200,10 @@ function exportGameData() {
 
 //Init
 
+// Read saved language directly from localStorage before rows are created
+var _savedLlm = localStorage.getItem('llmConfig');
+if (_savedLlm) { try { var _p = JSON.parse(_savedLlm); if (_p.language) currentLanguage = _p.language; } catch(e) {} }
+
 createAllRows(jobCategories, "jobTable")
 createAllRows(skillCategories, "skillTable")
 createAllRows(itemCategories, "itemTable") 
@@ -1057,7 +1221,7 @@ gameData.requirements = {
     //Other
     "The Arcane Association": new TaskRequirement(getElementsByClass("The Arcane Association"), [{task: "Concentration", requirement: 200}, {task: "Meditation", requirement: 200}]),
     "Dark magic": new EvilRequirement(getElementsByClass("Dark magic"), [{requirement: 1}]),
-    "Shop": new CoinRequirement([document.getElementById("shopTabButton")], [{requirement: gameData.itemData["Tent"].getExpense() * 50}]),
+    "Shop": new CoinRequirement([document.getElementById("shopTabButton")], [{requirement: 0}]),
     "Rebirth tab": new AgeRequirement([document.getElementById("rebirthTabButton")], [{requirement: 25}]),
     "Rebirth note 1": new AgeRequirement([document.getElementById("rebirthNote1")], [{requirement: 45}]),
     "Rebirth note 2": new AgeRequirement([document.getElementById("rebirthNote2")], [{requirement: 65}]),
@@ -1146,6 +1310,12 @@ for (key in gameData.requirements) {
 }
 
 loadGameData()
+gameData.paused = false
+initStoryLog()
+loadLLMConfig()
+currentLanguage = llmConfig.language || 'en';
+applyLanguageToUI();
+fetchAvailableProviders()
 
 setCustomEffects()
 addMultipliers()

@@ -4,32 +4,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="css/styles.css">
     <link rel="stylesheet" type="text/css" href="css/dark.css">
+    <link rel="stylesheet" type="text/css" href="css/story.css">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> 
     <title>Progress Knight</title>
 </head>
 <body id="body" class="dark">
     <div class="w3-margin"> 
-        <h1>Progress Knight</h1>
+        <h1 data-i18n="game_title">Progress Knight</h1>
         <div style="width: 1220px; height: 600px"> 
             <div class="panel w3-padding" style="width: 300px; height: auto; float: left">
                 <span id="deathText">
-                    <div style="font-size: large; color: red">Age has caught up to you</div>
-                    <div class="sidebar-element" style="color: gray">Your age has met your lifespan, use the amulet to rebirth before you pass away</div>
+                    <div style="font-size: large; color: red" data-i18n="sidebar_death">Age has caught up to you</div>
+                    <div class="sidebar-element" style="color: gray" data-i18n="sidebar_death_desc">Your age has met your lifespan, use the amulet to rebirth before you pass away</div>
                 </span>
 
-                <div class="" style="font-size: large">Age <span id="ageDisplay">14</span> Day <span id="dayDisplay">0</span></div>
-                <div class="sidebar-element" style="color: gray">Lifespan: <span id="lifespanDisplay">70</span> years</div>
+                <div class="" style="font-size: large"><span data-i18n="sidebar_age">Age</span> <span id="ageDisplay">14</span> <span data-i18n="sidebar_day">Day</span> <span id="dayDisplay">0</span></div>
+                <div class="sidebar-element" style="color: gray"><span data-i18n="sidebar_lifespan">Lifespan:</span> <span id="lifespanDisplay">70</span> <span data-i18n="sidebar_years">years</span></div>
                 
-                <button id="pauseButton" class="w3-button button sidebar-element" onClick="setPause()">Pause</button>
+                <button id="pauseButton" class="w3-button button sidebar-element" onClick="setPause()" data-i18n="sidebar_pause">Pause</button>
 
                 <span id="automation" class="inline" style="margin-left: 8px">
-                    <span>
-                        <div class="inline">Auto-promote</div>
+                    <span class="sidebar-tooltip" data-i18n-title="tooltip_auto_promote" title="Automatically switch to the next available job when requirements are met">
+                        <div class="inline" data-i18n="sidebar_auto_promote">Auto-promote</div>
                         <input type="checkbox" class="inline" id="autoPromote">
                     </span>
                     </br>
-                    <span>
-                        <div class="inline">Auto-learn</div>
+                    <span class="sidebar-tooltip" data-i18n-title="tooltip_auto_learn" title="Automatically switch to the skill with the lowest level (unchecked skills in Skip column are excluded)">
+                        <div class="inline" data-i18n="sidebar_auto_learn">Auto-learn</div>
                         <input type="checkbox" class="inline sidebar-element" id="autoLearn">
                     </span>
                 </span>
@@ -40,22 +41,27 @@
                     <span></span>
                     <span></span>
                 </div>
-                <div style="color: gray">Balance (in coins)</div>
+                <div style="color: gray" data-i18n="sidebar_balance">Balance (in coins)</div>
+                <div style="color: gray; font-size: x-small; margin-top: 2px">
+                    <span style="color:#79b9c7">1p</span>=100<span style="color:#E5C100">g</span>
+                    <span style="color:#E5C100">1g</span>=100<span style="color:#a8a8a8">s</span>
+                    <span style="color:#a8a8a8">1s</span>=100<span style="color:#a15c2f">c</span>
+                </div>
 
                 <ul class="sidebar-element" style="padding-left: 20px;">
-                    <li><span style="color: rgb(9, 160, 230)">Net/day: </span ><b id="signDisplay"></b><span id="netDisplay">
+                    <li><span style="color: rgb(9, 160, 230)" data-i18n="sidebar_net_day">Net/day: </span ><b id="signDisplay"></b><span id="netDisplay">
                         <span></span>
                         <span></span>
                         <span></span>
                         <span></span>
                     </span></li>
-                    <li><span style="color: green">Income/day: </span><span id="incomeDisplay">
+                    <li><span style="color: green" data-i18n="sidebar_income_day">Income/day: </span><span id="incomeDisplay">
                         <span></span>
                         <span></span>
                         <span></span>
                         <span></span>
                     </span></li>
-                    <li><span style="color: red">Expense/day: </span><span id="expenseDisplay">
+                    <li><span style="color: red" data-i18n="sidebar_expense_day">Expense/day: </span><span id="expenseDisplay">
                         <span></span>
                         <span></span>
                         <span></span>
@@ -63,53 +69,91 @@
                     </span></li>
                 </ul>
 
+                <div id="coinBonusSection" class="xp-bonus-section">
+                    <div class="xp-bonus-header" onclick="toggleCoinBreakdown('income')">
+                        <span style="color: green" data-i18n="sidebar_income_mult">Income mult:</span>
+                        <span id="incomeMultTotal" style="font-weight:bold">x1.00</span>
+                        <span id="incomeMultToggle" class="xp-bonus-toggle">▶</span>
+                    </div>
+                    <div id="incomeMultBreakdown" class="xp-breakdown"></div>
+
+                    <div class="xp-bonus-header" onclick="toggleCoinBreakdown('expense')">
+                        <span style="color: red" data-i18n="sidebar_expense_mult">Expense mult:</span>
+                        <span id="expenseMultTotal" style="font-weight:bold">x1.00</span>
+                        <span id="expenseMultToggle" class="xp-bonus-toggle">▶</span>
+                    </div>
+                    <div id="expenseMultBreakdown" class="xp-breakdown"></div>
+                </div>
+
                 <span id="quickTaskDisplay">
                     <div style="width: 230px" class="small-margin inline job progress-bar progressBar">
                         <div class="progress-fill progressFill" style="background-color:rgb(225, 165, 0)"></div>
                         <div class="progress-text name">Task</div>
                     </div>
-                    <div class="sidebar-element" style="color: gray">Current job</div>
+                    <div class="sidebar-element" style="color: gray" data-i18n="sidebar_current_job">Current job</div>
 
                     <div style="width: 230px" class="small-margin skill progress-bar progressBar">
                         <div class="progress-fill progressFill" style="background-color:rgb(225, 165, 0)"></div>
-                        <div class="progress-text name">Task</div>              
+                        <div class="progress-text name">Task</div>
                     </div>
-                    <div class="sidebar-element" style="color: gray">Current skill</div>
+                    <div class="sidebar-element" style="color: gray" data-i18n="sidebar_current_skill">Current skill</div>
                 </span>
 
-                <div style="font-size: large"><span style="color: rgb(15, 105, 207)">Happiness: </span><span id="happinessDisplay"></span></div>
-                <div style="color: gray" class="sidebar-element">Affects all xp gain</div>
+                <div id="xpBonusSection" class="xp-bonus-section">
+                    <div class="xp-bonus-header" onclick="toggleXpBreakdown('job')">
+                        <span style="color: #e5a100" data-i18n="sidebar_job_xp">Job XP:</span>
+                        <span id="jobXpTotal" style="font-weight:bold">x1.00</span>
+                        <span id="jobXpToggle" class="xp-bonus-toggle">▶</span>
+                    </div>
+                    <div id="jobXpBreakdown" class="xp-breakdown"></div>
+
+                    <div class="xp-bonus-header" onclick="toggleXpBreakdown('skill')">
+                        <span style="color: #2e94e7" data-i18n="sidebar_skill_xp">Skill XP:</span>
+                        <span id="skillXpTotal" style="font-weight:bold">x1.00</span>
+                        <span id="skillXpToggle" class="xp-bonus-toggle">▶</span>
+                    </div>
+                    <div id="skillXpBreakdown" class="xp-breakdown"></div>
+                </div>
+
+                <div id="storyInfo" class="sidebar-element">
+                    <div style="font-size: large"><span style="color: #E5C100" data-i18n="sidebar_story">Story: </span><span id="creditDisplay"></span></div>
+                    <div id="nextMilestoneDisplay" style="color: #b8860b; font-size: small"></div>
+                </div>
+
+                <div style="font-size: large"><span style="color: rgb(15, 105, 207)" data-i18n="sidebar_happiness">Happiness: </span><span id="happinessDisplay"></span></div>
+                <div style="color: gray" class="sidebar-element" data-i18n="sidebar_happiness_desc">Affects all xp gain</div>
 
                 <span id="evilInfo">
-                    <div style="font-size: large"><span style="color: rgb(200, 0, 0)">Evil: </span><span id="evilDisplay"></span></div>
-                    <div style="color: gray" class="sidebar-element">Affects dark magic xp gain</div>
+                    <div style="font-size: large"><span style="color: rgb(200, 0, 0)" data-i18n="sidebar_evil">Evil: </span><span id="evilDisplay"></span></div>
+                    <div style="color: gray" class="sidebar-element"><span data-i18n="sidebar_evil_desc">Affects dark magic xp gain</span> (<span data-i18n="sidebar_evil_gain">Gain:</span> <span id="evilGainDisplay"></span>)</div>
                 </span>
 
                 <!--
                 <span id="scheduling">
-                    <div style="font-size: large">Scheduling</div>
-                    <div style="color: gray" class="sidebar-element">Schedule time to jobs/skills</div>
+                    <div style="font-size: large" data-i18n="sidebar_scheduling">Scheduling</div>
+                    <div style="color: gray" class="sidebar-element" data-i18n="sidebar_scheduling_desc">Schedule time to jobs/skills</div>
                     <span style="height: 30px"> 
-                        <p style="width: 5px">Jobs</br>(32%)</p>
+                        <p style="width: 5px" data-i18n="sidebar_jobs">Jobs</br>(32%)</p>
                         <input id="schedulingSlider" class="slider" type="range" min="0" max="100" value="0">
-                        <p style="width: 5px">Skills</br>(68%)</p>
+                        <p style="width: 5px" data-i18n="sidebar_skills">Skills</br>(68%)</p>
                     </span>
                 </span>
                 -->
 
                 <span id="timeWarping">
-                    <div style="font-size: large"><span style="color: rgb(204, 34, 219)">Time warping: </span><span id="timeWarpingDisplay"></span></div>
-                    <div style="color: gray">Affects game speed</div>
-                    <button id="timeWarpingButton" class="w3-button button sidebar-element" style="margin-top: 5px; width:150px" onClick="setTimeWarping()">Enable warp</button>
+                    <div style="font-size: large"><span style="color: rgb(204, 34, 219)" data-i18n="sidebar_time_warping">Time warping: </span><span id="timeWarpingDisplay"></span></div>
+                    <div style="color: gray" data-i18n="sidebar_time_warping_desc">Affects game speed</div>
+                    <button id="timeWarpingButton" class="w3-button button sidebar-element" style="margin-top: 5px; width:150px" onClick="setTimeWarping()" data-i18n="sidebar_enable_warp">Enable warp</button>
                 </span>
             </div>
 
             <div class="panel w3-margin-left" style="width: 900px; height: 40px; float: left">
-                <div class="w3-button w3-bar-item tabButton" id="jobTabButton" onClick="setTab(this, 'jobs')">Jobs</div>
-                <div class="w3-button w3-bar-item tabButton" onClick="setTab(this, 'skills')">Skills</div>
-                <div class="w3-button w3-bar-item tabButton" id="shopTabButton" onClick="setTab(this, 'shop')">Shop</div>
-                <div class="w3-button w3-bar-item tabButton" id="rebirthTabButton" onClick="setTab(this, 'rebirth')">Amulet</div>
-                <div class="w3-button w3-bar-item tabButton" onClick="setTab(this, 'settings')" style="float: right">Settings</div>
+                <div class="w3-button w3-bar-item tabButton" id="jobTabButton" onClick="setTab(this, 'jobs')" data-i18n="tab_jobs">Jobs</div>
+                <div class="w3-button w3-bar-item tabButton" onClick="setTab(this, 'skills')" data-i18n="tab_skills">Skills</div>
+                <div class="w3-button w3-bar-item tabButton" id="shopTabButton" onClick="setTab(this, 'shop')" data-i18n="tab_shop">Shop</div>
+                <div class="w3-button w3-bar-item tabButton" id="rebirthTabButton" onClick="setTab(this, 'rebirth')" data-i18n="tab_amulet">Amulet</div>
+                <div class="w3-button w3-bar-item tabButton" id="storyTabButton" onClick="setTab(this, 'story'); updateStoryLogUI(); updateActiveEffectsUI();" data-i18n="tab_story">Story</div>
+                <div class="w3-button w3-bar-item tabButton" onClick="setTab(this, 'settings')" style="float: right" data-i18n="tab_settings">Settings</div>
             </div>
 
             <div class="panel w3-margin-left w3-margin-top w3-padding" style="width: 900px; height: auto; float: left">
@@ -220,83 +264,237 @@
 
                 <div class="tab" id="rebirth">
                     <ul>
-                        <li style="margin: 8px;">
+                        <li style="margin: 8px;" data-i18n="rebirth_amulet_1">
                             You stumble across a strange looking amulet on your 25th birthday. It does not look like
                             it has any worth on the market given that it's made from cheap-looking copper. However, you
                             feel a weird urge to keep the amulet, so you slip it into your pocket for safekeeping.
                         </li>
-                        <li style="margin: 8px;" id="rebirthNote1">
+                        <li style="margin: 8px;" id="rebirthNote1" data-i18n="rebirth_amulet_2">
                             On your 45th birthday, you feel the amulet shiver uncontrollably in your pocket. You take it
                             out and the constant shivering suddenly stops. More to your bizarre surprise, you notice
                             a strange etching on the centre of the amulet.
                         </li>
                         <li style="margin: 8px;" id="rebirthNote2">
-                            <div style="margin-bottom: 8px">
+                            <div style="margin-bottom: 8px" data-i18n="rebirth_amulet_3">
                                 On your 65th birthday, you once again encounter the strange, unexplained shivering from your
                                 amulet. But this time, a living eyeball emerges from the centre. Although terribly frightened,
                                 you realise you do not have many years to live left anyway so you consider touching the eye
                                 to see what happens.
                             </div>
-                            <i style="color: grey">
-                                By touching the eyeball, you will be reborn and have to restart life again, losing all your levels and coins.
-                                However, you will gain <b>xp multipliers</b> for your jobs and skills equivalent to: <b>1 + the max level of the skill or job / 10.</b>
-                                This means you will learn everything again much more quickly than you did in your previous life. <span style="color: rgb(200, 0, 0)">
-                                Something tells you that the amulet might transform even further after living for <b>2 whole centuries</b>...</span>
-                            </i>
+                            <i style="color: grey" id="rebirthDesc1"></i>
                             </br>
-                            <button class="w3-button button" style="margin-bottom: 8px; margin-top: 8px" onClick="rebirthOne()">Touch the eye</button>
+                            <button class="w3-button button" style="margin-bottom: 8px; margin-top: 8px" onClick="rebirthOne()" data-i18n="rebirth_touch_eye">Touch the eye</button>
                             </br>
                         </li>
                         <li style="margin: 8px;" id="rebirthNote3">
-                            <div style="margin-bottom: 8px;">
+                            <div style="margin-bottom: 8px;" data-i18n="rebirth_amulet_4">
                                 Your gut instinct was right. The moment you hit the grand age of 200, you hear an ominous hum coming from the amulet.
                                 A mouth emerges from its surface and begins to cackle, and proceeds to say: "So you've made it this far... Are you ready to embrace evil?"
                             </div>
-                            <i style="color: rgb(200, 0, 0)">
-                                If you decide to embrace evil, all of your levels, coins and even max levels will be reset.
-                                You will be reborn as a fresh slate. However, you will unlock a new line of skills and gain
-                                <b><span id="evilGainDisplay"></span> evil</b>, which will heavily impact your future lives.
-                            </i>
+                            <i style="color: rgb(200, 0, 0)" id="rebirthDesc2"></i>
                             </br>
-                                <button class="w3-button button" style="margin-bottom: 8px; margin-top: 8px" onClick="rebirthTwo()">Embrace evil</button>
+                                <button class="w3-button button" style="margin-bottom: 8px; margin-top: 8px" onClick="rebirthTwo()" data-i18n="rebirth_embrace_evil">Embrace evil</button>
                             </br>
                         </li>
                     </ul>
                 </div>
 
+                <div class="tab" id="story">
+                    <h2 style="color: #E5C100; margin-top: 0" data-i18n="story_log_title">Story Log</h2>
+                    <div id="storyLogContent"></div>
+                    <h2 style="color: #55a630; margin-top: 24px" data-i18n="story_active_effects">Active Story Effects</h2>
+                    <div id="activeEffectsContent"></div>
+                </div>
+
                 <div class="tab" id="settings">
                     <ul>
                         <li>
-                            <h2>Import/export save</h2>
-                            <button class="w3-button button" onClick="importGameData()">Import</button>
-                            <button class="w3-button button" onClick="exportGameData()">Export</button>
+                            <h2 data-i18n="settings_import_export">Import/export save</h2>
+                            <button class="w3-button button" onClick="importGameData()" data-i18n="settings_import">Import</button>
+                            <button class="w3-button button" onClick="exportGameData()" data-i18n="settings_export">Export</button>
                             <form style="margin-top: 16px"> 
                                 <input id="importExportBox" type="text" style="width:300px; height:30px"></input>
                             </form>
                         </li>
                         <li>
-                            <h2>Toggle light/dark mode</h2>
-                            <button class="w3-button button" onClick="setLightDarkMode()">Toggle</button>
+                            <h2 data-i18n="settings_toggle_mode">Toggle light/dark mode</h2>
+                            <button class="w3-button button" onClick="setLightDarkMode()" data-i18n="settings_toggle">Toggle</button>
                         </li>
                         <li>
-                            <h2>Join the discord community!</h2>
+                            <h2 data-i18n="settings_discord">Join the discord community!</h2>
                             <a href="https://discord.gg/fTRS4pHGka" target="_blank">
                                 <img src="https://cdn.icon-icons.com/icons2/2108/PNG/512/discord_icon_130958.png" width="100" height="100"></img>
                             </a>
                         </li>
                         <li>
-                            <h2>Hard reset game</h2>
-                            <button class="w3-button button w3-red" onClick="resetGameData()">Reset</button>
+                            <h2 data-i18n="settings_llm_title">LLM Story Settings</h2>
+                            <div style="margin-bottom: 8px">
+                                <label data-i18n="settings_story_gen">Story Generation: </label>
+                                <input type="checkbox" id="llmEnabled" checked onchange="llmConfig.enabled = this.checked; saveLLMConfig();">
+                                <span style="color: gray" data-i18n="settings_story_gen_desc"> Enable AI-generated stories at milestone levels</span>
+                            </div>
+                            <div style="margin-bottom: 8px">
+                                <label data-i18n="settings_language">Language: </label>
+                                <select id="llmLanguage" onchange="setLanguage(this.value);" style="height: 30px; width: 150px">
+                                    <option value="en">English</option>
+                                    <option value="zh">中文</option>
+                                    <option value="ja">日本語</option>
+                                    <option value="ko">한국어</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 8px">
+                                <label data-i18n="settings_provider">Provider: </label>
+                                <select id="llmProvider" onchange="llmConfig.provider = this.value; saveLLMConfig();" style="height: 30px; width: 150px">
+                                    <option value="xai">xAI (Grok)</option>
+                                    <option value="openai">OpenAI</option>
+                                    <option value="deepseek">DeepSeek</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 8px">
+                                <label data-i18n="settings_model">Model (optional): </label>
+                                <input type="text" id="llmModel" data-i18n-placeholder="settings_model_placeholder" placeholder="Leave empty for default" style="width: 200px; height: 30px" onchange="llmConfig.model = this.value; saveLLMConfig();">
+                            </div>
+                            <div style="color: gray; font-size: small" data-i18n="settings_api_keys_note">API keys are configured server-side in the .env file.</div>
+                            <div id="llmProviderStatus" style="color: gray; font-size: small; margin-top: 4px"></div>
+                        </li>
+                        <li>
+                            <h2 data-i18n="settings_credits_title">Story Credits</h2>
+                            <div style="margin-bottom: 8px; color: gray" data-i18n="settings_credits_desc">
+                                Each milestone story costs 1 credit. Each rebirth review costs 2 credits.
+                                New players start with 10 free credits.
+                            </div>
+                            <div style="margin-bottom: 8px">
+                                <label data-i18n="settings_redeem">Redeem Code: </label>
+                                <input type="text" id="redeemCodeInput" data-i18n-placeholder="settings_redeem_placeholder" placeholder="Enter code" style="width: 150px; height: 30px">
+                                <button class="w3-button button" style="height: 30px; padding: 0 12px" data-i18n="settings_redeem_btn" onclick="
+                                    var input = document.getElementById('redeemCodeInput');
+                                    var msg = document.getElementById('redeemMsg');
+                                    var result = redeemCode(input.value);
+                                    if (result.success) {
+                                        msg.textContent = '+' + result.amount + t('credits_added');
+                                        msg.style.color = '#55a630';
+                                        input.value = '';
+                                    } else {
+                                        msg.textContent = t('credits_invalid');
+                                        msg.style.color = '#e63946';
+                                    }
+                                ">Redeem</button>
+                                <span id="redeemMsg" style="font-size: small; margin-left: 8px"></span>
+                            </div>
+                        </li>
+                        <li>
+                            <h2 data-i18n="settings_byok_title">Use Your Own API Key (BYOK)</h2>
+                            <div style="margin-bottom: 8px; color: gray" data-i18n="settings_byok_desc">
+                                Supply your own API key to bypass the credit system. Your key is stored locally in your browser only.
+                            </div>
+                            <div style="margin-bottom: 8px">
+                                <label data-i18n="settings_use_own_key">Use own key: </label>
+                                <input type="checkbox" id="llmUseOwnKey" onchange="
+                                    llmConfig.useOwnKey = this.checked;
+                                    saveLLMConfig();
+                                    updateCreditDisplay();
+                                    document.getElementById('ownKeySection').style.display = this.checked ? 'block' : 'none';
+                                ">
+                            </div>
+                            <div id="ownKeySection" style="display: none; margin-bottom: 8px">
+                                <label data-i18n="settings_api_key">API Key: </label>
+                                <input type="password" id="llmOwnApiKey" data-i18n-placeholder="settings_api_key_placeholder" placeholder="sk-... or xai-..." style="width: 300px; height: 30px" onchange="
+                                    llmConfig.ownApiKey = this.value;
+                                    saveLLMConfig();
+                                    updateCreditDisplay();
+                                ">
+                                <div style="color: gray; font-size: small; margin-top: 4px" data-i18n="settings_api_key_note">Key is stored in localStorage only. Never sent anywhere except to the selected LLM provider via the proxy.</div>
+                            </div>
+                        </li>
+                        <li>
+                            <h2 data-i18n="settings_hard_reset">Hard reset game</h2>
+                            <button class="w3-button button w3-red" onClick="resetGameData()" data-i18n="settings_reset">Reset</button>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Notification container -->
+    <div id="notificationContainer"></div>
+
+    <!-- Story Modal Overlay -->
+    <div id="storyModalOverlay" style="display:none">
+        <div id="storyModal">
+            <div id="storyModalTitle"></div>
+            <div id="storyModalText"></div>
+            <div id="storyModalEffect"></div>
+            <button class="w3-button button" style="margin-top: 12px" onclick="hideStoryModal()" data-i18n="modal_close">Close</button>
+        </div>
+    </div>
 </body>
 
 <script type="text/javascript" src="js/HackTimer.js"></script>
+<script type="text/javascript" src="js/i18n-ui.js"></script>
+<script type="text/javascript" src="js/i18n-entities.js"></script>
+<script type="text/javascript" src="js/i18n.js"></script>
 <script type="text/javascript" src="js/classes.js"></script>
+<script type="text/javascript" src="js/llm-service.js"></script>
 <script type="text/javascript" src="js/main.js"></script>
+<script>
+    // Sync LLM config UI after load
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            var langEl = document.getElementById('llmLanguage');
+            var provEl = document.getElementById('llmProvider');
+            var modelEl = document.getElementById('llmModel');
+            var enabledEl = document.getElementById('llmEnabled');
+            var useOwnKeyEl = document.getElementById('llmUseOwnKey');
+            var ownKeyEl = document.getElementById('llmOwnApiKey');
+            var ownKeySec = document.getElementById('ownKeySection');
+            currentLanguage = llmConfig.language || 'en';
+            if (langEl) langEl.value = llmConfig.language;
+            if (provEl) provEl.value = llmConfig.provider;
+            if (modelEl) modelEl.value = llmConfig.model || '';
+            if (enabledEl) enabledEl.checked = llmConfig.enabled;
+            if (useOwnKeyEl) useOwnKeyEl.checked = llmConfig.useOwnKey;
+            if (ownKeyEl) ownKeyEl.value = llmConfig.ownApiKey || '';
+            if (ownKeySec) ownKeySec.style.display = llmConfig.useOwnKey ? 'block' : 'none';
 
+            updateCreditDisplay();
+            updateMilestoneIndicator();
+            applyLanguageToUI();
+            updateRebirthDescriptions();
+
+            // Auto-fetch env API key for local dev: enable BYOK with server-side key
+            fetch('/api/config').then(function(r) { return r.json(); }).then(function(cfg) {
+                if (cfg.apiKey && !llmConfig.ownApiKey) {
+                    llmConfig.useOwnKey = true;
+                    llmConfig.ownApiKey = cfg.apiKey;
+                    if (cfg.provider) llmConfig.provider = cfg.provider;
+                    saveLLMConfig();
+                    // Sync UI
+                    if (useOwnKeyEl) useOwnKeyEl.checked = true;
+                    if (ownKeyEl) ownKeyEl.value = cfg.apiKey;
+                    if (ownKeySec) ownKeySec.style.display = 'block';
+                    if (provEl) provEl.value = cfg.provider;
+                    updateCreditDisplay();
+                    var statusEl = document.getElementById('llmProviderStatus');
+                    if (statusEl) {
+                        statusEl.textContent = 'Auto-configured from .env: ' + cfg.provider;
+                        statusEl.style.color = '#55a630';
+                    }
+                }
+            }).catch(function() { /* /api/config not available (e.g. GitHub Pages) */ });
+
+            // Show provider status
+            fetchAvailableProviders().then(function(providers) {
+                var statusEl = document.getElementById('llmProviderStatus');
+                if (statusEl && providers.length > 0) {
+                    statusEl.textContent = t('providers_available') + providers.map(function(p) { return p.name; }).join(', ');
+                    statusEl.style.color = '#55a630';
+                } else if (statusEl) {
+                    statusEl.textContent = t('providers_none');
+                    statusEl.style.color = '#e63946';
+                }
+            });
+        }, 500);
+    });
+</script>
 </html>

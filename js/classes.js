@@ -29,6 +29,7 @@ class Task {
     }
 
     increaseXp() {
+        var oldLevel = this.level
         this.xp += applySpeed(this.getXpGain())
         if (this.xp >= this.getMaxXp()) {
             var excess = this.xp - this.getMaxXp()
@@ -37,6 +38,10 @@ class Task {
                 excess -= this.getMaxXp()
             }
             this.xp = this.getMaxXp() + excess
+        }
+        if (this.level > oldLevel && typeof onLevelUp === 'function') {
+            var taskType = this instanceof Job ? 'job' : 'skill'
+            onLevelUp(this.name, taskType, oldLevel, this.level)
         }
     }
 }

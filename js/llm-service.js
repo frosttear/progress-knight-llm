@@ -1,0 +1,840 @@
+// LLM Service Module - handles API calls, prompt building, and story generation
+
+var llmConfig = {
+    provider: 'xai',
+    model: '',
+    language: 'en',
+    enabled: true,
+    availableProviders: [],
+    useOwnKey: false,
+    ownApiKey: ''
+};
+
+// Credit system
+var INITIAL_FREE_CREDITS = 10;
+var MILESTONE_STORY_COST = 1;
+var REBIRTH_STORY_COST = 2;
+
+// Milestone levels that trigger full LLM story generation
+const milestoneLevels = [10, 25, 50, 100, 200, 500, 1000];
+
+// Throttle: prevent multiple simultaneous requests
+var llmRequestPending = false;
+
+// Queue for story generation requests
+var storyQueue = [];
+var processingQueue = false;
+
+function getProviderCatalog() {
+    return {
+        xai: {
+            id: 'xai',
+            name: 'xAI (Grok)',
+            baseUrl: 'https://api.x.ai/v1/chat/completions',
+            defaultModel: 'grok-3'
+        },
+        openai: {
+            id: 'openai',
+            name: 'OpenAI',
+            baseUrl: 'https://api.openai.com/v1/chat/completions',
+            defaultModel: 'gpt-4o-mini'
+        },
+        deepseek: {
+            id: 'deepseek',
+            name: 'DeepSeek',
+            baseUrl: 'https://api.deepseek.com/v1/chat/completions',
+            defaultModel: 'deepseek-chat'
+        }
+    };
+}
+
+// ============================================================
+// Provider Discovery
+// ============================================================
+
+async function fetchAvailableProviders() {
+    var catalog = getProviderCatalog();
+    var providers = [];
+    for (var key in catalog) {
+        providers.push({
+            id: catalog[key].id,
+            name: catalog[key].name,
+            defaultModel: catalog[key].defaultModel
+        });
+    }
+    llmConfig.availableProviders = providers;
+    if (providers.length > 0 && !llmConfig.provider) {
+        llmConfig.provider = providers[0].id;
+    }
+    return providers;
+}
+
+// ============================================================
+// Prompt Templates
+// ============================================================
+
+function getGameContext() {
+    var ctx = {
+        age: daysToYears(gameData.days),
+        day: getDay(),
+        coins: gameData.coins,
+        happiness: getHappiness().toFixed(1),
+        evil: gameData.evil.toFixed(1),
+        currentJob: tName(gameData.currentJob.name),
+        currentJobLevel: gameData.currentJob.level,
+        currentSkill: tName(gameData.currentSkill.name),
+        currentSkillLevel: gameData.currentSkill.level,
+        currentProperty: tName(gameData.currentProperty.name),
+        rebirthCount: gameData.rebirthOneCount,
+        darkRebirthCount: gameData.rebirthTwoCount,
+        topJobs: [],
+        topSkills: []
+    };
+
+    // Gather top leveled jobs & skills
+    for (var name in gameData.taskData) {
+        var task = gameData.taskData[name];
+        if (task.level > 0) {
+            if (task instanceof Job) {
+                ctx.topJobs.push({ name: tName(name), level: task.level });
+            } else {
+                ctx.topSkills.push({ name: tName(name), level: task.level });
+            }
+        }
+    }
+    ctx.topJobs.sort(function(a, b) { return b.level - a.level; });
+    ctx.topSkills.sort(function(a, b) { return b.level - a.level; });
+
+    return ctx;
+}
+
+function getLanguageInstruction() {
+    var langMap = {
+        'en': 'Respond in English.',
+        'zh': '请用中文回答。',
+        'ja': '日本語で回答してください。',
+        'ko': '한국어로 답변해 주세요.'
+    };
+    return langMap[llmConfig.language] || langMap['en'];
+}
+
+function getValidTargets() {
+    var jobs = [];
+    for (var cat in jobCategories) { jobs = jobs.concat(jobCategories[cat]); }
+    var skills = [];
+    for (var cat in skillCategories) { skills = skills.concat(skillCategories[cat]); }
+    return { jobs: jobs, skills: skills };
+}
+
+function buildMilestonePrompt(taskName, taskType, newLevel, ctx) {
+    var existingTooltip = tooltips[taskName] || '';
+    var recentStories = getRecentStories(3);
+    var recentStorySummary = recentStories.length > 0
+        ? 'Recent events in this character\'s life:\n' + recentStories.map(function(s) { return '- ' + s.text; }).join('\n')
+        : 'No notable events yet in this life.';
+
+    var targets = getValidTargets();
+
+    var prompt = 'You are a narrator for a medieval fantasy idle game called "Progress Knight". '
+        + 'The player character is living a life from beggar to legend.\n\n'
+        + getLanguageInstruction() + '\n\n'
+        + 'CHARACTER STATE:\n'
+        + '- Age: ' + ctx.age + ' years, Day ' + ctx.day + '\n'
+        + '- Current Job: ' + ctx.currentJob + ' (level ' + ctx.currentJobLevel + ')\n'
+        + '- Current Skill: ' + ctx.currentSkill + ' (level ' + ctx.currentSkillLevel + ')\n'
+        + '- Housing: ' + ctx.currentProperty + '\n'
+        + '- Happiness: ' + ctx.happiness + ', Evil: ' + ctx.evil + '\n'
+        + '- Rebirths: ' + ctx.rebirthCount + ', Dark rebirths: ' + ctx.darkRebirthCount + '\n'
+        + '- Top Jobs: ' + ctx.topJobs.slice(0, 5).map(function(j) { return j.name + '(' + j.level + ')'; }).join(', ') + '\n'
+        + '- Top Skills: ' + ctx.topSkills.slice(0, 5).map(function(s) { return s.name + '(' + s.level + ')'; }).join(', ') + '\n\n'
+        + 'VALID GAME ENTITIES (use these exact English names for "target"):\n'
+        + '- Jobs: ' + targets.jobs.join(', ') + '\n'
+        + '- Skills: ' + targets.skills.join(', ') + '\n\n'
+        + 'PREVIOUS EVENTS:\n' + recentStorySummary + '\n\n'
+        + 'CURRENT EVENT:\n'
+        + 'The character\'s ' + taskType + ' "' + tName(taskName) + '" has reached level ' + newLevel + '.\n'
+        + 'Flavor text for this ' + taskType + ': "' + existingTooltip + '"\n\n'
+        + 'INSTRUCTIONS:\n'
+        + 'Generate a short, vivid narrative (2-4 sentences) describing a unique personal experience or event that happened to the character as they reached this milestone. '
+        + 'Make it feel personal and memorable - a specific encounter, discovery, battle, or moment of growth.\n\n'
+        + 'Then suggest a small gameplay bonus the character earned from this experience. '
+        + 'You MUST respond in this exact JSON format:\n'
+        + '```json\n'
+        + '{\n'
+        + '  "story": "Your narrative text here",\n'
+        + '  "effect": {\n'
+        + '    "type": "xp_multiplier" | "income_bonus" | "happiness_boost" | "lifespan_bonus",\n'
+        + '    "target": "exact English task/skill name from the VALID GAME ENTITIES list above, or empty string for global",\n'
+        + '    "value": 0.05,\n'
+        + '    "duration": "permanent" | "life"\n'
+        + '  }\n'
+        + '}\n'
+        + '```\n'
+        + 'IMPORTANT: The "target" field MUST be one of the exact English names listed in VALID GAME ENTITIES, or "" for a global bonus. '
+        + 'Do NOT translate or invent target names.\n'
+        + 'Keep the effect value small (0.02-0.20). All effect types use the same scale: 0.05 means +5% bonus. '
+        + 'The effect should thematically match the story. "life" duration means it lasts until next rebirth. '
+        + '"permanent" means it persists across rebirths.\n'
+        + 'ONLY output the JSON, no other text.';
+
+    return prompt;
+}
+
+function buildRebirthReviewPrompt(ctx) {
+    var allStories = getLifeStories();
+    var storySummary = allStories.length > 0
+        ? allStories.map(function(s) { return '- [Age ' + daysToYears(s.day) + '] ' + s.text; }).join('\n')
+        : 'A quiet, unremarkable life.';
+
+    var targets = getValidTargets();
+
+    var prompt = 'You are a narrator for a medieval fantasy idle game called "Progress Knight". '
+        + 'The player character has reached the end of a life and is about to be reborn.\n\n'
+        + getLanguageInstruction() + '\n\n'
+        + 'LIFE SUMMARY:\n'
+        + '- Lived to age: ' + ctx.age + '\n'
+        + '- Highest Job: ' + (ctx.topJobs[0] ? ctx.topJobs[0].name + ' (lvl ' + ctx.topJobs[0].level + ')' : tName('Beggar')) + '\n'
+        + '- Highest Skill: ' + (ctx.topSkills[0] ? ctx.topSkills[0].name + ' (lvl ' + ctx.topSkills[0].level + ')' : t('story_none')) + '\n'
+        + '- Final Housing: ' + ctx.currentProperty + '\n'
+        + '- Final Happiness: ' + ctx.happiness + ', Evil: ' + ctx.evil + '\n'
+        + '- Total coins earned (approximate): ' + format(ctx.coins) + '\n'
+        + '- Rebirth number: ' + ctx.rebirthCount + '\n\n'
+        + 'VALID GAME ENTITIES (use these exact English names for "target"):\n'
+        + '- Jobs: ' + targets.jobs.join(', ') + '\n'
+        + '- Skills: ' + targets.skills.join(', ') + '\n\n'
+        + 'KEY LIFE EVENTS:\n' + storySummary + '\n\n'
+        + 'INSTRUCTIONS:\n'
+        + 'Write a poetic, reflective "life review" narrative (4-6 sentences) summarizing this character\'s life. '
+        + 'Reference specific events from the KEY LIFE EVENTS if available. '
+        + 'End with a hint about what the next life might bring.\n\n'
+        + 'Then suggest a rebirth bonus. Respond in this exact JSON format:\n'
+        + '```json\n'
+        + '{\n'
+        + '  "story": "Your life review narrative here",\n'
+        + '  "effect": {\n'
+        + '    "type": "xp_multiplier" | "income_bonus" | "happiness_boost" | "lifespan_bonus",\n'
+        + '    "target": "exact English task/skill name from VALID GAME ENTITIES, or empty string for global",\n'
+        + '    "value": 0.05,\n'
+        + '    "duration": "permanent"\n'
+        + '  }\n'
+        + '}\n'
+        + '```\n'
+        + 'IMPORTANT: The "target" field MUST be one of the exact English names listed in VALID GAME ENTITIES, or "" for a global bonus. '
+        + 'Do NOT translate or invent target names.\n'
+        + 'The rebirth bonus should be permanent and reflect the life lived. Value range: 0.02-0.15. All effect types use the same scale: 0.05 means +5% bonus.\n'
+        + 'ONLY output the JSON, no other text.';
+
+    return prompt;
+}
+
+// ============================================================
+// API Call
+// ============================================================
+
+async function callLLM(prompt) {
+    if (!llmConfig.enabled) return null;
+    if (!llmConfig.useOwnKey || !llmConfig.ownApiKey) {
+        addNotification(t('notif_no_own_key'));
+        return null;
+    }
+
+    try {
+        var catalog = getProviderCatalog();
+        var provider = catalog[llmConfig.provider] || catalog.xai;
+        var body = {
+            model: llmConfig.model || provider.defaultModel,
+            messages: [{ role: 'user', content: prompt }]
+        };
+        var res = await fetch(provider.baseUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + llmConfig.ownApiKey
+            },
+            body: JSON.stringify(body)
+        });
+
+        if (!res.ok) {
+            var errText = await res.text();
+            console.error('LLM API error:', errText);
+            addNotification(t('notif_llm_request_failed'));
+            return null;
+        }
+
+        var data = await res.json();
+        var content = data.choices[0].message.content;
+
+        // Extract JSON from response (handle markdown code blocks)
+        var jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/);
+        if (jsonMatch) {
+            content = jsonMatch[1];
+        }
+        // Also try to find raw JSON
+        content = content.trim();
+        if (!content.startsWith('{')) {
+            var braceStart = content.indexOf('{');
+            if (braceStart >= 0) {
+                content = content.substring(braceStart);
+            }
+        }
+
+        return JSON.parse(content);
+    } catch (err) {
+        console.error('LLM call failed:', err);
+        addNotification(t('notif_llm_request_failed'));
+        return null;
+    }
+}
+
+// ============================================================
+// Story Generation
+// ============================================================
+
+function isMilestoneLevel(level) {
+    for (var i = 0; i < milestoneLevels.length; i++) {
+        if (level === milestoneLevels[i]) return true;
+    }
+    return false;
+}
+
+function getNextMilestone(currentLevel) {
+    for (var i = 0; i < milestoneLevels.length; i++) {
+        if (milestoneLevels[i] > currentLevel) return milestoneLevels[i];
+    }
+    return null;
+}
+
+function updateMilestoneIndicator() {
+    var el = document.getElementById('nextMilestoneDisplay');
+    if (!el) return;
+    if (!llmConfig.enabled) {
+        el.textContent = '';
+        return;
+    }
+    // Show next milestone for current job and skill
+    var jobNext = getNextMilestone(gameData.currentJob.level);
+    var skillNext = getNextMilestone(gameData.currentSkill.level);
+    var parts = [];
+    if (jobNext) parts.push(tName(gameData.currentJob.name) + ': ' + gameData.currentJob.level + '/' + jobNext);
+    if (skillNext) parts.push(tName(gameData.currentSkill.name) + ': ' + gameData.currentSkill.level + '/' + skillNext);
+    if (parts.length === 0) {
+        el.textContent = t('milestone_all_done');
+    } else {
+        el.textContent = parts.join('  |  ');
+    }
+}
+
+// ============================================================
+// Credit System
+// ============================================================
+
+function initCredits() {
+    if (typeof gameData.storyCredits === 'undefined' || gameData.storyCredits === null) {
+        gameData.storyCredits = INITIAL_FREE_CREDITS;
+    }
+}
+
+function getCredits() {
+    initCredits();
+    return gameData.storyCredits;
+}
+
+function hasEnoughCredits(cost) {
+    if (llmConfig.useOwnKey && llmConfig.ownApiKey) return true;
+    return getCredits() >= cost;
+}
+
+function spendCredits(cost) {
+    if (llmConfig.useOwnKey && llmConfig.ownApiKey) return true;
+    initCredits();
+    if (gameData.storyCredits < cost) return false;
+    gameData.storyCredits -= cost;
+    updateCreditDisplay();
+    return true;
+}
+
+function addCredits(amount) {
+    initCredits();
+    gameData.storyCredits += amount;
+    updateCreditDisplay();
+}
+
+function updateCreditDisplay() {
+    var el = document.getElementById('creditDisplay');
+    if (!el) return;
+    if (llmConfig.useOwnKey && llmConfig.ownApiKey) {
+        el.textContent = t('credits_using_own_key');
+        el.style.color = '#55a630';
+    } else {
+        el.textContent = getCredits() + t('credits_suffix');
+        el.style.color = getCredits() > 0 ? '#E5C100' : '#e63946';
+    }
+}
+
+function redeemCode(code) {
+    // Simple code validation - in production, verify server-side
+    var validCodes = {
+        'FREESTORY10': 10,
+        'FREESTORY25': 25,
+        'FREESTORY50': 50
+    };
+    var upper = code.trim().toUpperCase();
+    if (validCodes[upper]) {
+        addCredits(validCodes[upper]);
+        return { success: true, amount: validCodes[upper] };
+    }
+    return { success: false, amount: 0 };
+}
+
+function getFixedLevelUpText(taskName, taskType, level) {
+    var templateKey = taskType === 'skill' ? 'levelup_skill' : 'levelup_job';
+    var template = t(templateKey);
+    return tName(taskName) + template.replace('{level}', level);
+}
+
+async function generateMilestoneStory(taskName, taskType, newLevel) {
+    if (!hasEnoughCredits(MILESTONE_STORY_COST)) {
+        addNotification(t('notif_no_credits'));
+        return;
+    }
+    var ctx = getGameContext();
+    var prompt = buildMilestonePrompt(taskName, taskType, newLevel, ctx);
+    var result = await callLLM(prompt);
+
+    if (result && result.story) {
+        // Add to story log
+        addStoryEntry({
+            type: 'milestone',
+            taskName: taskName,
+            taskType: taskType,
+            level: newLevel,
+            day: gameData.days,
+            text: result.story,
+            effect: result.effect || null
+        });
+
+        // Apply effect
+        if (result.effect) {
+            applyStoryEffect(result.effect);
+        }
+
+        // Spend credit only on success
+        spendCredits(MILESTONE_STORY_COST);
+
+        // Show modal
+        showStoryModal(tName(taskName) + ' — ' + t('level_word') + ' ' + newLevel, result.story, result.effect);
+    }
+}
+
+async function generateRebirthReview() {
+    if (!hasEnoughCredits(REBIRTH_STORY_COST)) {
+        addNotification(t('notif_no_credits_rebirth'));
+        return;
+    }
+    var ctx = getGameContext();
+    var prompt = buildRebirthReviewPrompt(ctx);
+    var result = await callLLM(prompt);
+
+    if (result && result.story) {
+        addStoryEntry({
+            type: 'rebirth_review',
+            taskName: '',
+            taskType: '',
+            level: 0,
+            day: gameData.days,
+            text: result.story,
+            effect: result.effect || null
+        });
+
+        if (result.effect) {
+            applyStoryEffect(result.effect);
+        }
+
+        spendCredits(REBIRTH_STORY_COST);
+
+        showStoryModal(t('story_life_review'), result.story, result.effect);
+    }
+}
+
+// Queue-based story processing to avoid parallel API calls
+function enqueueStory(taskName, taskType, newLevel) {
+    storyQueue.push({ taskName: taskName, taskType: taskType, newLevel: newLevel });
+    processStoryQueue();
+}
+
+async function processStoryQueue() {
+    if (processingQueue || storyQueue.length === 0) return;
+    processingQueue = true;
+
+    while (storyQueue.length > 0) {
+        var item = storyQueue.shift();
+        await generateMilestoneStory(item.taskName, item.taskType, item.newLevel);
+    }
+
+    processingQueue = false;
+}
+
+// ============================================================
+// Level-up Handler (called from Task.increaseXp hook)
+// ============================================================
+
+function onLevelUp(taskName, taskType, oldLevel, newLevel) {
+    // Check each level crossed
+    for (var lvl = oldLevel + 1; lvl <= newLevel; lvl++) {
+        if (isMilestoneLevel(lvl)) {
+            enqueueStory(taskName, taskType, lvl);
+        } else {
+            // Fixed notification for non-milestone levels (only at intervals of 5)
+            if (lvl % 5 === 0) {
+                var text = getFixedLevelUpText(taskName, taskType, lvl);
+                addNotification(text);
+            }
+        }
+    }
+}
+
+// ============================================================
+// Story Log Management
+// ============================================================
+
+function initStoryLog() {
+    if (!gameData.storyLog) {
+        gameData.storyLog = [];
+    }
+    if (!gameData.storyEffects) {
+        gameData.storyEffects = [];
+    }
+    // Sanitize any effects with out-of-range values from old saves
+    for (var i = 0; i < gameData.storyEffects.length; i++) {
+        var eff = gameData.storyEffects[i];
+        eff.value = Math.min(Math.max(parseFloat(eff.value) || 0.05, 0.01), 0.20);
+    }
+}
+
+function addStoryEntry(entry) {
+    initStoryLog();
+    entry.id = Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+    gameData.storyLog.push(entry);
+}
+
+function getRecentStories(count) {
+    initStoryLog();
+    return gameData.storyLog.slice(-count);
+}
+
+function getLifeStories() {
+    initStoryLog();
+    // Stories from current life (since last rebirth - approximate by filtering entries without rebirth_review after the last rebirth_review)
+    var lastRebirthIndex = -1;
+    for (var i = gameData.storyLog.length - 1; i >= 0; i--) {
+        if (gameData.storyLog[i].type === 'rebirth_review') {
+            lastRebirthIndex = i;
+            break;
+        }
+    }
+    return gameData.storyLog.slice(lastRebirthIndex + 1);
+}
+
+// ============================================================
+// Story Effect System
+// ============================================================
+
+function resolveTargetName(target) {
+    if (!target || target === '') return '';
+    // Already a valid internal name
+    if (gameData.taskData[target] || gameData.itemData[target]) return target;
+    // Try reverse-lookup from translated names
+    for (var lang in nameTranslations) {
+        var dict = nameTranslations[lang];
+        for (var enName in dict) {
+            if (dict[enName] === target) return enName;
+        }
+    }
+    // Unrecognized target — default to global
+    console.warn('[Story] Unrecognized effect target "' + target + '", defaulting to global');
+    return '';
+}
+
+function normalizeEffectType(type) {
+    if (!type) return 'xp_multiplier';
+    type = type.toLowerCase().trim().replace(/[\s_-]+/g, '_');
+    if (type === 'xp_multiplier' || type === 'xp_bonus' || type === 'experience_multiplier' || type === 'experience_bonus') return 'xp_multiplier';
+    if (type === 'income_bonus' || type === 'income_multiplier' || type === 'coin_bonus') return 'income_bonus';
+    if (type === 'happiness_boost' || type === 'happiness_bonus' || type === 'happiness_multiplier') return 'happiness_boost';
+    if (type === 'lifespan_bonus' || type === 'lifespan_multiplier' || type === 'life_bonus') return 'lifespan_bonus';
+    return type;
+}
+
+function applyStoryEffect(effect) {
+    if (!effect || !effect.type) return;
+    initStoryLog();
+
+    var rawValue = parseFloat(effect.value) || 0.05;
+    var storyEffect = {
+        type: normalizeEffectType(effect.type),
+        target: resolveTargetName(effect.target),
+        value: Math.min(Math.max(rawValue, 0.01), 0.20),
+        duration: effect.duration || 'life',
+        applied: true
+    };
+
+    console.log('[Story] Applied effect:', JSON.stringify(storyEffect), 'Total effects:', gameData.storyEffects.length + 1);
+    gameData.storyEffects.push(storyEffect);
+    recalculateStoryMultipliers();
+}
+
+function getStoryXpMultiplier(taskName) {
+    initStoryLog();
+    var multiplier = 1;
+    for (var i = 0; i < gameData.storyEffects.length; i++) {
+        var eff = gameData.storyEffects[i];
+        if (eff.type === 'xp_multiplier') {
+            if (eff.target === '' || eff.target === taskName) {
+                multiplier += eff.value;
+            }
+        }
+    }
+    return multiplier;
+}
+
+function getStoryIncomeMultiplier(taskName) {
+    initStoryLog();
+    var multiplier = 1;
+    for (var i = 0; i < gameData.storyEffects.length; i++) {
+        var eff = gameData.storyEffects[i];
+        if (eff.type === 'income_bonus') {
+            if (eff.target === '' || eff.target === taskName) {
+                multiplier += eff.value;
+            }
+        }
+    }
+    return multiplier;
+}
+
+function getStoryHappinessBoost() {
+    initStoryLog();
+    var boost = 0;
+    for (var i = 0; i < gameData.storyEffects.length; i++) {
+        var eff = gameData.storyEffects[i];
+        if (eff.type === 'happiness_boost') {
+            boost += eff.value;
+        }
+    }
+    return 1 + boost;
+}
+
+function getStoryLifespanMultiplier() {
+    initStoryLog();
+    var multiplier = 1;
+    for (var i = 0; i < gameData.storyEffects.length; i++) {
+        var eff = gameData.storyEffects[i];
+        if (eff.type === 'lifespan_bonus') {
+            multiplier += eff.value;
+        }
+    }
+    return multiplier;
+}
+
+function recalculateStoryMultipliers() {
+    // This is called after effects change; the actual multiplier functions
+    // are bound via getStoryXpMultiplier etc. and queried each tick.
+}
+
+function clearLifeEffects() {
+    // Remove "life" duration effects on rebirth
+    initStoryLog();
+    gameData.storyEffects = gameData.storyEffects.filter(function(eff) {
+        return eff.duration === 'permanent';
+    });
+}
+
+// ============================================================
+// Notification System (for non-milestone level-ups)
+// ============================================================
+
+var notifications = [];
+var maxNotifications = 5;
+
+function addNotification(text) {
+    notifications.push({ text: text, time: Date.now() });
+    if (notifications.length > maxNotifications) {
+        notifications.shift();
+    }
+    updateNotificationUI();
+}
+
+function updateNotificationUI() {
+    var container = document.getElementById('notificationContainer');
+    if (!container) return;
+    container.innerHTML = '';
+    for (var i = notifications.length - 1; i >= 0; i--) {
+        var div = document.createElement('div');
+        div.className = 'notification-item';
+        div.textContent = notifications[i].text;
+        container.appendChild(div);
+    }
+    // Auto-fade old notifications
+    setTimeout(function() {
+        if (notifications.length > 0 && Date.now() - notifications[0].time > 5000) {
+            notifications.shift();
+            updateNotificationUI();
+        }
+    }, 5000);
+}
+
+// ============================================================
+// Story Modal UI
+// ============================================================
+
+function showStoryModal(title, storyText, effect) {
+    var overlay = document.getElementById('storyModalOverlay');
+    if (!overlay) return;
+
+    document.getElementById('storyModalTitle').textContent = title;
+    document.getElementById('storyModalText').textContent = storyText;
+
+    var effectEl = document.getElementById('storyModalEffect');
+    if (effect) {
+        var effectDesc = describeEffect(effect);
+        effectEl.textContent = effectDesc;
+        effectEl.style.display = 'block';
+    } else {
+        effectEl.style.display = 'none';
+    }
+
+    overlay.style.display = 'flex';
+}
+
+function hideStoryModal() {
+    var overlay = document.getElementById('storyModalOverlay');
+    if (overlay) overlay.style.display = 'none';
+}
+
+function describeEffect(effect) {
+    var typeMap = {
+        xp_multiplier: 'effect_xp_multiplier',
+        income_bonus: 'effect_income_bonus',
+        happiness_boost: 'effect_happiness_boost',
+        lifespan_bonus: 'effect_lifespan_bonus'
+    };
+    var durationMap = {
+        permanent: 'effect_permanent',
+        life: 'effect_life'
+    };
+    var typeName = t(typeMap[effect.type] || effect.type);
+    var durName = t(durationMap[effect.duration] || effect.duration);
+    var targetText = effect.target ? ' (' + tName(effect.target) + ')' : '';
+    var displayValue = Math.min(Math.max(parseFloat(effect.value) || 0.05, 0.01), 0.20);
+    var valueText = '+' + (displayValue * 100).toFixed(0) + '%';
+    return '✦ ' + typeName + targetText + ': ' + valueText + ' [' + durName + ']';
+}
+
+// ============================================================
+// Story Log Tab
+// ============================================================
+
+function updateStoryLogUI() {
+    var container = document.getElementById('storyLogContent');
+    if (!container) return;
+
+    initStoryLog();
+    container.innerHTML = '';
+
+    if (gameData.storyLog.length === 0) {
+        var empty = document.createElement('p');
+        empty.style.color = 'gray';
+        empty.textContent = t('story_no_stories');
+        container.appendChild(empty);
+        return;
+    }
+
+    // Show stories in reverse chronological order
+    for (var i = gameData.storyLog.length - 1; i >= 0; i--) {
+        var entry = gameData.storyLog[i];
+        var card = document.createElement('div');
+        card.className = 'story-card';
+
+        var header = document.createElement('div');
+        header.className = 'story-card-header';
+        if (entry.type === 'rebirth_review') {
+            header.textContent = t('story_log_header_rebirth').replace('{title}', t('story_life_review')).replace('{age}', daysToYears(entry.day));
+            header.style.color = '#C71585';
+        } else {
+            header.textContent = t('story_log_header').replace('{name}', tName(entry.taskName)).replace('{level}', entry.level).replace('{age}', daysToYears(entry.day));
+            header.style.color = '#E5C100';
+        }
+
+        var body = document.createElement('div');
+        body.className = 'story-card-body';
+        body.textContent = entry.text;
+
+        card.appendChild(header);
+        card.appendChild(body);
+
+        if (entry.effect) {
+            var effectDiv = document.createElement('div');
+            effectDiv.className = 'story-card-effect';
+            effectDiv.textContent = describeEffect(entry.effect);
+            card.appendChild(effectDiv);
+        }
+
+        container.appendChild(card);
+    }
+}
+
+// ============================================================
+// Active Story Effects Summary
+// ============================================================
+
+function updateActiveEffectsUI() {
+    var container = document.getElementById('activeEffectsContent');
+    if (!container) return;
+
+    initStoryLog();
+    container.innerHTML = '';
+
+    if (gameData.storyEffects.length === 0) {
+        var empty = document.createElement('p');
+        empty.style.color = 'gray';
+        empty.textContent = t('story_no_effects');
+        container.appendChild(empty);
+        return;
+    }
+
+    for (var i = 0; i < gameData.storyEffects.length; i++) {
+        var eff = gameData.storyEffects[i];
+        var div = document.createElement('div');
+        div.className = 'effect-item';
+        div.textContent = describeEffect(eff);
+        container.appendChild(div);
+    }
+}
+
+// ============================================================
+// Settings persistence
+// ============================================================
+
+function saveLLMConfig() {
+    localStorage.setItem('llmConfig', JSON.stringify({
+        provider: llmConfig.provider,
+        model: llmConfig.model,
+        language: llmConfig.language,
+        enabled: llmConfig.enabled,
+        useOwnKey: llmConfig.useOwnKey,
+        ownApiKey: llmConfig.ownApiKey
+    }));
+}
+
+function loadLLMConfig() {
+    var saved = localStorage.getItem('llmConfig');
+    if (saved) {
+        var parsed = JSON.parse(saved);
+        llmConfig.provider = parsed.provider || 'xai';
+        llmConfig.model = parsed.model || '';
+        llmConfig.language = parsed.language || 'en';
+        llmConfig.enabled = parsed.enabled !== false;
+        llmConfig.useOwnKey = parsed.useOwnKey || false;
+        llmConfig.ownApiKey = parsed.ownApiKey || '';
+    }
+    initCredits();
+}

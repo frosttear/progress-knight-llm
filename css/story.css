@@ -1,0 +1,165 @@
+/* ============================================================
+   Story Modal
+   ============================================================ */
+
+#storyModalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+#storyModal {
+    background: #1a1a2e;
+    border: 1px solid #E5C100;
+    border-radius: 8px;
+    padding: 24px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 0 30px rgba(229, 193, 0, 0.2);
+}
+
+#storyModalTitle {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #E5C100;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 8px;
+}
+
+#storyModalText {
+    color: #ddd;
+    line-height: 1.6;
+    margin-bottom: 12px;
+    font-style: italic;
+}
+
+#storyModalEffect {
+    color: #55a630;
+    font-size: 0.9em;
+    padding: 8px;
+    background: rgba(85, 166, 48, 0.1);
+    border-radius: 4px;
+    border-left: 3px solid #55a630;
+}
+
+/* ============================================================
+   Notification Container
+   ============================================================ */
+
+#notificationContainer {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 320px;
+    z-index: 999;
+    pointer-events: none;
+}
+
+.notification-item {
+    background: rgba(26, 26, 46, 0.95);
+    border: 1px solid #444;
+    border-left: 3px solid #E5C100;
+    color: #ccc;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    animation: notifSlideIn 0.3s ease-out;
+}
+
+@keyframes notifSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ============================================================
+   Story Log Tab
+   ============================================================ */
+
+.story-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+}
+
+.story-card-header {
+    font-weight: bold;
+    font-size: 0.95em;
+    margin-bottom: 6px;
+}
+
+.story-card-body {
+    color: #ccc;
+    font-style: italic;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.story-card-effect {
+    color: #55a630;
+    font-size: 0.85em;
+    padding: 4px 8px;
+    background: rgba(85, 166, 48, 0.08);
+    border-radius: 3px;
+    display: inline-block;
+}
+
+/* ============================================================
+   Active Effects
+   ============================================================ */
+
+.effect-item {
+    color: #55a630;
+    padding: 4px 0;
+    font-size: 0.9em;
+}
+
+/* ============================================================
+   Light mode overrides
+   ============================================================ */
+
+body:not(.dark) #storyModal {
+    background: #fff;
+    border-color: #b8860b;
+}
+
+body:not(.dark) #storyModalTitle {
+    color: #b8860b;
+    border-bottom-color: #ddd;
+}
+
+body:not(.dark) #storyModalText {
+    color: #333;
+}
+
+body:not(.dark) .notification-item {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: #ccc;
+    border-left-color: #b8860b;
+    color: #333;
+}
+
+body:not(.dark) .story-card {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: #ddd;
+}
+
+body:not(.dark) .story-card-body {
+    color: #555;
+}
