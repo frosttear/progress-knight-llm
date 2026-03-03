@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>进度条骑士 — 策略攻略</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: #0f0f1a;
+            color: #ccc;
+            margin: 0;
+            padding: 32px;
+            line-height: 1.7;
+        }
+        h1 { color: #E5C100; font-size: 2em; margin-bottom: 4px; }
+        h2 { color: #E5C100; border-bottom: 1px solid #333; padding-bottom: 6px; margin-top: 40px; }
+        h3 { color: #aaa; margin-bottom: 8px; }
+        .subtitle { color: #666; margin-bottom: 40px; font-size: 0.95em; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+            font-size: 0.92em;
+        }
+        th {
+            background: #1a1a2e;
+            color: #E5C100;
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 2px solid #333;
+        }
+        td {
+            padding: 7px 12px;
+            border-bottom: 1px solid #222;
+            vertical-align: top;
+        }
+        tr:hover td { background: rgba(255,255,255,0.03); }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .s  { background: rgba(229,193,0,0.2);  color: #E5C100; }
+        .a  { background: rgba(85,166,48,0.2);  color: #55a630; }
+        .b  { background: rgba(46,148,231,0.2); color: #2e94e7; }
+        .c  { background: rgba(150,150,150,0.15); color: #888; }
+        .warn { color: #e63946; font-weight: bold; }
+        .good { color: #55a630; }
+        .note {
+            background: rgba(229,193,0,0.07);
+            border-left: 3px solid #E5C100;
+            padding: 10px 16px;
+            border-radius: 4px;
+            margin: 16px 0;
+            font-size: 0.93em;
+        }
+        .phase {
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+        }
+        .phase h3 { margin-top: 0; color: #E5C100; }
+        ol li { margin-bottom: 6px; }
+        .section-common   { color: #55a630; }
+        .section-military { color: #e63946; }
+        .section-arcane   { color: #C71585; }
+        .section-fund     { color: #7a7eb8; }
+        .section-combat   { color: #ff704d; }
+        .section-magic    { color: #875F9A; }
+        .section-dark     { color: #c0392b; }
+        .tier-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .tier-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .tier-label {
+            width: 32px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            flex-shrink: 0;
+        }
+        .tier-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .tier-item {
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.88em;
+            border: 1px solid currentColor;
+        }
+    </style>
+</head>
+<body>
+
+<h1>进度条骑士 — 策略攻略</h1>
+<div class="subtitle">基于游戏源代码中的真实数值，所有数据均已验证。</div>
+
+<!-- ============================================================ -->
+<h2>核心机制</h2>
+
+<table>
+    <tr><th>机制</th><th>公式</th></tr>
+    <tr><td>经验获取</td><td><code>10 × 所有经验倍率（连乘）× 游戏速度</code></td></tr>
+    <tr><td>职业收入</td><td><code>基础收入 × (1 + log10(等级+1)) × 技能/物品倍率</code></td></tr>
+    <tr><td>等级倍率</td><td>1级 = ×1.0 &nbsp;|&nbsp; 9级 = ×2.0 &nbsp;|&nbsp; 99级 = ×3.0</td></tr>
+    <tr><td>幸福度</td><td>乘以<em>所有</em>经验获取。由冥想、住房、管家提升。</td></tr>
+    <tr><td>破产</td><td>金币变负 → 住房重置为无家可归，杂项物品丢失。生命继续。</td></tr>
+    <tr><td>技能效果</td><td><code>1 + (效果值 × 等级)</code>，大多数技能在100级时达到 ×2.0。</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>最优策略</h2>
+
+<div class="phase">
+    <h3>第一阶段 — 生命初期（无转生）</h3>
+    <ol>
+        <li>保持在<strong>乞丐</strong>（无支出）上，优先刷<strong>专注</strong>——它倍增所有技能经验，带动所有其他技能。</li>
+        <li>同步刷<strong>议价</strong>——将所有支出压至10%下限，是保持余额为正的最重要手段。</li>
+        <li>渔夫收入能覆盖后，立刻购买<strong>书本</strong>（10金/天）——以极低代价获得 ×1.5 技能经验。</li>
+        <li>只有在议价足够高、收入稳定覆盖支出后，再升职至<strong>农民 → 渔夫 → 矿工</strong>。</li>
+    </ol>
+</div>
+
+<div class="phase">
+    <h3>第二阶段 — 生命中期</h3>
+    <ol>
+        <li>刷<strong>效率</strong>——满级 ×2.0 职业经验，大幅加速升至高收入职业的速度。</li>
+        <li>刷<strong>冥想</strong>——幸福度倍增所有经验，与其他加成叠乘。</li>
+        <li>升级住房前确保 <code>净收入 ≥ 新支出的2倍</code>，留足缓冲。</li>
+        <li>根据转生次数和已解锁技能，选择进入<strong>军事</strong>或<strong>秘法协会</strong>路线。</li>
+    </ol>
+</div>
+
+<div class="phase">
+    <h3>第三阶段 — 生命末期 / 转生准备</h3>
+    <ol>
+        <li>刷<strong>不朽</strong>（以及后期的<strong>超级不朽</strong>）——时间越长，收益越高。</li>
+        <li>刷<strong>时间扭曲</strong>——直接提升游戏速度，后期最强技能。</li>
+        <li>秘法路线以<strong>法师 / 巫师</strong>为目标，单位经验的收入回报最高。</li>
+        <li>稳定达到商人/骑士/法师后即可转生，将最高等级加成带入下一世。</li>
+    </ol>
+</div>
+
+<div class="note">
+    ⚠️ <strong>自动晋升警告：</strong>侍从每天仅赚 5 金——比乞丐还差。开启自动晋升时切换军事路线会立刻破产。切换路线前请手动关闭自动晋升。
+</div>
+
+<!-- ============================================================ -->
+<h2>职业</h2>
+
+<h3 class="section-common">普通工作</h3>
+<table>
+    <tr><th>职业</th><th>收入/天</th><th>所需经验</th><th>点评</th></tr>
+    <tr><td>乞丐</td><td>5金</td><td>50</td><td>起点。零支出，是前期刷技能的安全基地。</td></tr>
+    <tr><td>农民</td><td>9金</td><td>100</td><td>提升微乎其微，尽快跳过。</td></tr>
+    <tr><td>渔夫</td><td>15金</td><td>200</td><td>可支付帐篷（15金）。首个住房解锁门槛。</td></tr>
+    <tr><td>矿工</td><td>40金</td><td>400</td><td>前期中坚。可轻松支付书本 + 帐篷。</td></tr>
+    <tr><td>铁匠</td><td>80金</td><td>800</td><td>稳定。升级后可支付个人侍从（200金）。</td></tr>
+    <tr><td>商人</td><td>150金</td><td>1,600</td><td class="good">普通工作最高收入。第一次转生的理想目标。</td></tr>
+</table>
+
+<h3 class="section-military">军事</h3>
+<table>
+    <tr><th>职业</th><th>收入/天</th><th>所需经验</th><th>点评</th></tr>
+    <tr><td>侍从</td><td class="warn">5金</td><td>100</td><td><span class="warn">收入陷阱</span>——比乞丐还差。请谨慎、有意识地进入此路线。</td></tr>
+    <tr><td>步兵</td><td>50金</td><td>1,000</td><td>恢复到矿工水平的收入。</td></tr>
+    <tr><td>老兵步兵</td><td>120金</td><td>10,000</td><td>超过商人。配合战术 + 力量技能性价比不错。</td></tr>
+    <tr><td>骑士</td><td>300金</td><td>100,000</td><td>强劲收入，但经验门槛很高。</td></tr>
+    <tr><td>老兵骑士</td><td>1,000金</td><td>1,000,000</td><td>收入大幅跃升。</td></tr>
+    <tr><td>精英骑士</td><td>3,000金</td><td>7,500,000</td><td>后期优秀收入。</td></tr>
+    <tr><td>圣骑士</td><td>15,000金</td><td>40,000,000</td><td>军事路线终局级别。</td></tr>
+    <tr><td>传奇骑士</td><td>50,000金</td><td>150,000,000</td><td>军事最高收入，与巫师持平。</td></tr>
+</table>
+
+<h3 class="section-arcane">秘法协会</h3>
+<table>
+    <tr><th>职业</th><th>收入/天</th><th>所需经验</th><th>点评</th></tr>
+    <tr><td>学生</td><td>100金</td><td>100,000</td><td>入门必经之路，收入偏低但解锁最强路线。</td></tr>
+    <tr><td>见习法师</td><td>1,000金</td><td>1,000,000</td><td>与老兵骑士收入相同，有魔力控制可更早到达。</td></tr>
+    <tr><td>法师</td><td>7,500金</td><td>10,000,000</td><td class="good">中期最佳收入。第一次转生的强力目标。</td></tr>
+    <tr><td>巫师</td><td>50,000金</td><td>100,000,000</td><td class="good">与传奇骑士收入持平，但有魔力控制后经验效率更高。</td></tr>
+    <tr><td>大巫师</td><td>250,000金</td><td>10,000,000,000</td><td>终局级。需深度投资魔力控制 + 不朽。</td></tr>
+    <tr><td>主席</td><td>1,000,000金</td><td>1,000,000,000,000</td><td class="good">收入上限极高。终极目标。</td></tr>
+</table>
+
+<div class="note">
+    <strong>最佳路线：</strong>秘法协会 &gt; 军事 ≈ 普通工作。魔力控制使秘法路线庞大的经验门槛变得可接受，且收入上限远高于其他路线。
+</div>
+
+<!-- ============================================================ -->
+<h2>技能</h2>
+
+<h3 class="section-fund">基础技能</h3>
+<table>
+    <tr><th>技能</th><th>每级效果</th><th>满级效果（100级）</th><th>评级</th><th>点评</th></tr>
+    <tr><td>专注</td><td>+1% 技能经验</td><td>×2.0</td><td><span class="tag s">S</span></td><td>永远第一个刷。倍增所有其他技能的经验获取，带动全局。</td></tr>
+    <tr><td>议价</td><td>−支出（对数曲线）</td><td>~×0.1 下限</td><td><span class="tag s">S</span></td><td>余额保护最关键的技能，与专注同步刷。</td></tr>
+    <tr><td>效率</td><td>+1% 职业经验</td><td>×2.0</td><td><span class="tag a">A</span></td><td>满级后到达高收入职业的时间减半。</td></tr>
+    <tr><td>冥想</td><td>+1% 幸福度</td><td>×2.0 幸福度</td><td><span class="tag b">B</span></td><td>幸福度倍增所有经验获取，中期优先投资。</td></tr>
+</table>
+
+<h3 class="section-combat">战斗</h3>
+<table>
+    <tr><th>技能</th><th>每级效果</th><th>满级效果（100级）</th><th>评级</th><th>点评</th></tr>
+    <tr><td>力量</td><td>+1% 军事薪酬</td><td>×2.0 军事收入</td><td><span class="tag b">B</span></td><td>仅限军事路线。满级后军事收入翻倍。</td></tr>
+    <tr><td>战术</td><td>+1% 军事经验</td><td>×2.0</td><td><span class="tag b">B</span></td><td>军事专属经验加速，与力量配合使用。</td></tr>
+    <tr><td>肌肉记忆</td><td>+1% 力量经验</td><td>×2.0</td><td><span class="tag c">C</span></td><td>仅在深度投资军事路线时才有价值，优先级低。</td></tr>
+</table>
+
+<h3 class="section-magic">魔法</h3>
+<table>
+    <tr><th>技能</th><th>每级效果</th><th>满级效果（100级）</th><th>评级</th><th>点评</th></tr>
+    <tr><td>魔力控制</td><td>+1% 秘法协会经验</td><td>×2.0</td><td><span class="tag s">S</span></td><td>秘法路线必备，使庞大的经验门槛变得可接受。</td></tr>
+    <tr><td>时间扭曲</td><td>对数曲线速度提升</td><td>≈×2.1 游戏速度</td><td><span class="tag s">S</span></td><td>直接提升原始游戏速度，一切均受益。后期最强技能。</td></tr>
+    <tr><td>不朽</td><td>+1% 寿命</td><td>×2.0 寿命</td><td><span class="tag a">A</span></td><td>更多时间 = 更多一切。与超级不朽连乘叠加。</td></tr>
+    <tr><td>超级不朽</td><td>+1% 寿命</td><td>×2.0 寿命</td><td><span class="tag a">A</span></td><td>两者同时满级可获得 ×4.0 总寿命。</td></tr>
+</table>
+
+<h3 class="section-dark">黑暗魔法 <small style="color:#666">（需要第二次转生，邪恶值达到门槛）</small></h3>
+<table>
+    <tr><th>技能</th><th>每级效果</th><th>满级效果（100级）</th><th>评级</th><th>点评</th></tr>
+    <tr><td>黑暗影响</td><td>+1% 所有经验</td><td>×2.0</td><td><span class="tag s">S</span></td><td>全局经验倍率，与所有其他加成叠乘。</td></tr>
+    <tr><td>恶魔训练</td><td>+1% 所有经验</td><td>×2.0</td><td><span class="tag s">S</span></td><td>第二个全局经验倍率。与黑暗影响合并：所有经验 ×4.0。</td></tr>
+    <tr><td>恶魔财富</td><td>+0.2% 收入</td><td>×2.0 所有收入</td><td><span class="tag a">A</span></td><td>全局收入倍率，优于力量/战术（适用于所有职业）。</td></tr>
+    <tr><td>恐吓</td><td>−支出（对数曲线）</td><td>~×0.1 下限</td><td><span class="tag a">A</span></td><td>与议价公式相同，叠加后可将支出压至最低。</td></tr>
+    <tr><td>邪恶控制</td><td>+1% 邪恶获取</td><td>×2.0 邪恶获取</td><td><span class="tag b">B</span></td><td>加速解锁更深层的黑暗魔法技能。</td></tr>
+    <tr><td>血之冥想</td><td>+1% 邪恶获取</td><td>×2.0 邪恶获取</td><td><span class="tag c">C</span></td><td>与邪恶控制叠加，加速邪恶积累，定位较为小众。</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>技能评级总结</h2>
+
+<div class="tier-list">
+    <div class="tier-row">
+        <div class="tier-label" style="color:#E5C100">S</div>
+        <div class="tier-items">
+            <span class="tier-item" style="color:#E5C100">时间扭曲</span>
+            <span class="tier-item" style="color:#E5C100">专注</span>
+            <span class="tier-item" style="color:#E5C100">议价</span>
+            <span class="tier-item" style="color:#E5C100">魔力控制</span>
+            <span class="tier-item" style="color:#E5C100">黑暗影响</span>
+            <span class="tier-item" style="color:#E5C100">恶魔训练</span>
+        </div>
+    </div>
+    <div class="tier-row">
+        <div class="tier-label" style="color:#55a630">A</div>
+        <div class="tier-items">
+            <span class="tier-item" style="color:#55a630">效率</span>
+            <span class="tier-item" style="color:#55a630">不朽</span>
+            <span class="tier-item" style="color:#55a630">超级不朽</span>
+            <span class="tier-item" style="color:#55a630">恶魔财富</span>
+            <span class="tier-item" style="color:#55a630">恐吓</span>
+        </div>
+    </div>
+    <div class="tier-row">
+        <div class="tier-label" style="color:#2e94e7">B</div>
+        <div class="tier-items">
+            <span class="tier-item" style="color:#2e94e7">冥想</span>
+            <span class="tier-item" style="color:#2e94e7">力量</span>
+            <span class="tier-item" style="color:#2e94e7">战术</span>
+            <span class="tier-item" style="color:#2e94e7">邪恶控制</span>
+        </div>
+    </div>
+    <div class="tier-row">
+        <div class="tier-label" style="color:#888">C</div>
+        <div class="tier-items">
+            <span class="tier-item" style="color:#888">肌肉记忆</span>
+            <span class="tier-item" style="color:#888">血之冥想</span>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<h2>余额安全守则</h2>
+
+<table>
+    <tr><th>情况</th><th>应对措施</th></tr>
+    <tr><td>收入 &lt; 支出</td><td>立即降级住房或取消杂项物品。</td></tr>
+    <tr><td>切换至更贵的住房</td><td>确保 <code>收入 ≥ 新支出的 2 倍</code>，保留缓冲。</td></tr>
+    <tr><td>议价处于 0 级</td><td>避免使用任何超过帐篷（15金/天）的住房。</td></tr>
+    <tr><td>开启自动晋升</td><td>注意侍从切换——收入会跌至 5 金/天。</td></tr>
+    <tr><td>进入军事/秘法路线</td><td>先关闭自动晋升，在收入稳定时手动切换。</td></tr>
+</table>
+
+<p style="color:#444; font-size:0.8em; margin-top:48px">数据来源：进度条骑士源代码 — <code>main.js</code>、<code>classes.js</code></p>
+
+</body>
+</html>

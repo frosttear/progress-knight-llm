@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress Knight — Strategy Guide</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f0f1a;
+            color: #ccc;
+            margin: 0;
+            padding: 32px;
+            line-height: 1.6;
+        }
+        h1 { color: #E5C100; font-size: 2em; margin-bottom: 4px; }
+        h2 { color: #E5C100; border-bottom: 1px solid #333; padding-bottom: 6px; margin-top: 40px; }
+        h3 { color: #aaa; margin-bottom: 8px; }
+        .subtitle { color: #666; margin-bottom: 40px; font-size: 0.95em; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+            font-size: 0.92em;
+        }
+        th {
+            background: #1a1a2e;
+            color: #E5C100;
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 2px solid #333;
+        }
+        td {
+            padding: 7px 12px;
+            border-bottom: 1px solid #222;
+            vertical-align: top;
+        }
+        tr:hover td { background: rgba(255,255,255,0.03); }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .s  { background: rgba(229,193,0,0.2);  color: #E5C100; }
+        .a  { background: rgba(85,166,48,0.2);  color: #55a630; }
+        .b  { background: rgba(46,148,231,0.2); color: #2e94e7; }
+        .c  { background: rgba(150,150,150,0.15); color: #888; }
+        .warn { color: #e63946; font-weight: bold; }
+        .good { color: #55a630; }
+        .note {
+            background: rgba(229,193,0,0.07);
+            border-left: 3px solid #E5C100;
+            padding: 10px 16px;
+            border-radius: 4px;
+            margin: 16px 0;
+            font-size: 0.93em;
+        }
+        .phase {
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+        }
+        .phase h3 { margin-top: 0; color: #E5C100; }
+        ol li { margin-bottom: 6px; }
+        .section-common  { color: #55a630; }
+        .section-military { color: #e63946; }
+        .section-arcane  { color: #C71585; }
+        .section-fund    { color: #4a4e69; }
+        .section-combat  { color: #ff704d; }
+        .section-magic   { color: #875F9A; }
+        .section-dark    { color: #c0392b; }
+        .tier-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .tier-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .tier-label {
+            width: 32px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            flex-shrink: 0;
+        }
+        .tier-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .tier-item {
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.88em;
+            border: 1px solid currentColor;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Progress Knight — Strategy Guide</h1>
+<div class="subtitle">Based on actual game data. All numbers verified from source code.</div>
+
+<!-- ============================================================ -->
+<h2>Key Mechanics</h2>
+
+<table>
+    <tr><th>Mechanic</th><th>Formula</th></tr>
+    <tr><td>XP gain</td><td><code>10 × all XP multipliers (multiplied together) × game speed</code></td></tr>
+    <tr><td>Job income</td><td><code>baseIncome × (1 + log10(level+1)) × skill/item multipliers</code></td></tr>
+    <tr><td>Level multiplier</td><td>Level 1 = ×1.0 &nbsp;|&nbsp; Level 9 = ×2.0 &nbsp;|&nbsp; Level 99 = ×3.0</td></tr>
+    <tr><td>Happiness</td><td>Multiplies <em>all</em> XP gain. Boosted by Meditation, housing, Butler.</td></tr>
+    <tr><td>Bankruptcy</td><td>Coins go negative → housing resets to Homeless, misc items lost. Life continues.</td></tr>
+    <tr><td>Skill effect</td><td><code>1 + (effect × level)</code> — most skills cap at ×2.0 at level 100.</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>Optimal Strategy</h2>
+
+<div class="phase">
+    <h3>Phase 1 — Early Life (no rebirth)</h3>
+    <ol>
+        <li>Stay on <strong>Beggar</strong> (0 expenses) while grinding <strong>Concentration</strong> first — it multiplies all skill XP, compounding every other skill.</li>
+        <li>Grind <strong>Bargaining</strong> simultaneously — slashes all expenses toward a 10% floor. The single biggest balance protector.</li>
+        <li>Buy <strong>Book</strong> (10c/day) as soon as Fisherman income covers it — ×1.5 all skill XP for very low cost.</li>
+        <li>Upgrade to <strong>Farmer → Fisherman → Miner</strong> only after Bargaining is high enough that income comfortably exceeds expenses.</li>
+    </ol>
+</div>
+
+<div class="phase">
+    <h3>Phase 2 — Mid Life</h3>
+    <ol>
+        <li>Level <strong>Productivity</strong> — ×2.0 job XP at max, lets you reach higher-paying jobs much faster.</li>
+        <li>Level <strong>Meditation</strong> — happiness multiplies all XP. Stacks with everything.</li>
+        <li>Upgrade housing only when <code>net income ≥ 2× new expense</code> as a safety buffer.</li>
+        <li>Unlock <strong>Military or Arcane</strong> track based on your rebirth count and available skills.</li>
+    </ol>
+</div>
+
+<div class="phase">
+    <h3>Phase 3 — Late Life / Rebirth Prep</h3>
+    <ol>
+        <li>Level <strong>Immortality</strong> (and later Super immortality) — more time = more everything.</li>
+        <li>Level <strong>Time warping</strong> — increases raw game speed. Most powerful late-game skill.</li>
+        <li>Aim for <strong>Mage / Wizard</strong> on the Arcane track for best income per XP invested.</li>
+        <li>Rebirth once Merchant/Knight/Mage is comfortably reached to carry max-level bonuses forward.</li>
+    </ol>
+</div>
+
+<div class="note">
+    ⚠️ <strong>Auto-promote warning:</strong> Squire pays only 5c/day — worse than Beggar. Switching to the Military track mid-life with auto-promote enabled can instantly bankrupt you. Disable auto-promote before switching tracks intentionally.
+</div>
+
+<!-- ============================================================ -->
+<h2>Jobs</h2>
+
+<h3 class="section-common">Common Work</h3>
+<table>
+    <tr><th>Job</th><th>Income/day</th><th>XP Required</th><th>Notes</th></tr>
+    <tr><td>Beggar</td><td>5c</td><td>50</td><td>Starting point. 0 expenses — safe early skill grinding base.</td></tr>
+    <tr><td>Farmer</td><td>9c</td><td>100</td><td>Marginal upgrade. Skip quickly.</td></tr>
+    <tr><td>Fisherman</td><td>15c</td><td>200</td><td>Covers Tent (15c). First housing unlock threshold.</td></tr>
+    <tr><td>Miner</td><td>40c</td><td>400</td><td>Good mid-early. Covers Book + Tent comfortably.</td></tr>
+    <tr><td>Blacksmith</td><td>80c</td><td>800</td><td>Solid. Covers Personal squire once leveled up.</td></tr>
+    <tr><td>Merchant</td><td>150c</td><td>1600</td><td class="good">Best Common Work income. Good first-rebirth target.</td></tr>
+</table>
+
+<h3 class="section-military">Military</h3>
+<table>
+    <tr><th>Job</th><th>Income/day</th><th>XP Required</th><th>Notes</th></tr>
+    <tr><td>Squire</td><td class="warn">5c</td><td>100</td><td><span class="warn">Income trap</span> — worse than Beggar. Enter intentionally only.</td></tr>
+    <tr><td>Footman</td><td>50c</td><td>1,000</td><td>Recovers to Miner-level income.</td></tr>
+    <tr><td>Veteran footman</td><td>120c</td><td>10,000</td><td>Surpasses Merchant. Worth it with Battle tactics + Strength.</td></tr>
+    <tr><td>Knight</td><td>300c</td><td>100,000</td><td>Strong income but large XP wall.</td></tr>
+    <tr><td>Veteran knight</td><td>1,000c</td><td>1,000,000</td><td>Major income jump.</td></tr>
+    <tr><td>Elite knight</td><td>3,000c</td><td>7,500,000</td><td>Excellent late-game income.</td></tr>
+    <tr><td>Holy knight</td><td>15,000c</td><td>40,000,000</td><td>Endgame military tier.</td></tr>
+    <tr><td>Legendary knight</td><td>50,000c</td><td>150,000,000</td><td>Top military income. Comparable to Wizard.</td></tr>
+</table>
+
+<h3 class="section-arcane">The Arcane Association</h3>
+<table>
+    <tr><th>Job</th><th>Income/day</th><th>XP Required</th><th>Notes</th></tr>
+    <tr><td>Student</td><td>100c</td><td>100,000</td><td>Low income for the XP wall, but required entry point to the best track.</td></tr>
+    <tr><td>Apprentice mage</td><td>1,000c</td><td>1,000,000</td><td>Same income as Veteran knight, reachable sooner with Mana control.</td></tr>
+    <tr><td>Mage</td><td>7,500c</td><td>10,000,000</td><td class="good">Best mid-game income. Strong target for rebirth 1.</td></tr>
+    <tr><td>Wizard</td><td>50,000c</td><td>100,000,000</td><td class="good">Tied with Legendary knight in income. Superior income/XP ratio with Mana control.</td></tr>
+    <tr><td>Master wizard</td><td>250,000c</td><td>10,000,000,000</td><td>Endgame. Requires heavy Mana control + Immortality investment.</td></tr>
+    <tr><td>Chairman</td><td>1,000,000c</td><td>1,000,000,000,000</td><td class="good">Effectively unlimited money. Ultimate life goal.</td></tr>
+</table>
+
+<div class="note">
+    <strong>Best track:</strong> Arcane Association &gt; Military ≈ Common Work. Mana control makes the Arcane track's enormous XP walls manageable, and the income ceiling is far higher.
+</div>
+
+<!-- ============================================================ -->
+<h2>Skills</h2>
+
+<h3 class="section-fund">Fundamentals</h3>
+<table>
+    <tr><th>Skill</th><th>Effect/level</th><th>Max (lvl 100)</th><th>Tier</th><th>Notes</th></tr>
+    <tr><td>Concentration</td><td>+1% skill XP</td><td>×2.0</td><td><span class="tag s">S</span></td><td>Level first, always. Compounds every other skill.</td></tr>
+    <tr><td>Bargaining</td><td>−expenses (log curve)</td><td>~×0.1 floor</td><td><span class="tag s">S</span></td><td>Essential balance protector. Level alongside Concentration.</td></tr>
+    <tr><td>Productivity</td><td>+1% job XP</td><td>×2.0</td><td><span class="tag a">A</span></td><td>Halves the time to reach high-income jobs.</td></tr>
+    <tr><td>Meditation</td><td>+1% happiness</td><td>×2.0 happiness</td><td><span class="tag b">B</span></td><td>Happiness multiplies all XP. Good mid-game investment.</td></tr>
+</table>
+
+<h3 class="section-combat">Combat</h3>
+<table>
+    <tr><th>Skill</th><th>Effect/level</th><th>Max (lvl 100)</th><th>Tier</th><th>Notes</th></tr>
+    <tr><td>Strength</td><td>+1% military pay</td><td>×2.0 military income</td><td><span class="tag b">B</span></td><td>Military-only. Doubles income on Military track at max.</td></tr>
+    <tr><td>Battle tactics</td><td>+1% military XP</td><td>×2.0</td><td><span class="tag b">B</span></td><td>Military-only XP accelerator. Pairs with Strength.</td></tr>
+    <tr><td>Muscle memory</td><td>+1% Strength XP</td><td>×2.0</td><td><span class="tag c">C</span></td><td>Only useful if deeply invested in Military. Low general priority.</td></tr>
+</table>
+
+<h3 class="section-magic">Magic</h3>
+<table>
+    <tr><th>Skill</th><th>Effect/level</th><th>Max (lvl 100)</th><th>Tier</th><th>Notes</th></tr>
+    <tr><td>Mana control</td><td>+1% Arcane XP</td><td>×2.0</td><td><span class="tag s">S</span></td><td>Essential for Arcane track. Makes the enormous XP walls manageable.</td></tr>
+    <tr><td>Time warping</td><td>log13-based speed</td><td>≈×2.1 game speed</td><td><span class="tag s">S</span></td><td>Multiplies raw game speed. Everything benefits. Most powerful late-game skill.</td></tr>
+    <tr><td>Immortality</td><td>+1% lifespan</td><td>×2.0 lifespan</td><td><span class="tag a">A</span></td><td>More time = more everything. Stacks multiplicatively with Super immortality.</td></tr>
+    <tr><td>Super immortality</td><td>+1% lifespan</td><td>×2.0 lifespan</td><td><span class="tag a">A</span></td><td>Multiplies with Immortality for ×4.0 total lifespan at both maxed.</td></tr>
+</table>
+
+<h3 class="section-dark">Dark Magic <small style="color:#666">(requires rebirth 2, evil ≥ threshold)</small></h3>
+<table>
+    <tr><th>Skill</th><th>Effect/level</th><th>Max (lvl 100)</th><th>Tier</th><th>Notes</th></tr>
+    <tr><td>Dark influence</td><td>+1% all XP</td><td>×2.0</td><td><span class="tag s">S</span></td><td>Global XP multiplier. Stacks with every other bonus.</td></tr>
+    <tr><td>Demon training</td><td>+1% all XP</td><td>×2.0</td><td><span class="tag s">S</span></td><td>Second global XP multiplier. Combined with Dark influence: ×4.0 all XP.</td></tr>
+    <tr><td>Demon's wealth</td><td>+0.2% income</td><td>×2.0 all income</td><td><span class="tag a">A</span></td><td>Global income multiplier. Better than Strength/Battle tactics since it applies to all jobs.</td></tr>
+    <tr><td>Intimidation</td><td>−expenses (log curve)</td><td>~×0.1 floor</td><td><span class="tag a">A</span></td><td>Same formula as Bargaining. Stack both to minimize expenses to the floor.</td></tr>
+    <tr><td>Evil control</td><td>+1% evil gain</td><td>×2.0 evil gain</td><td><span class="tag b">B</span></td><td>Needed to unlock deeper Dark magic skills faster.</td></tr>
+    <tr><td>Blood meditation</td><td>+1% evil gain</td><td>×2.0 evil gain</td><td><span class="tag c">C</span></td><td>Stacks with Evil control for faster evil accumulation. Niche.</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>Tier List Summary</h2>
+
+<div class="tier-list">
+    <div class="tier-row">
+        <div class="tier-label" style="color:#E5C100">S</div>
+        <div class="tier-items">
+            <span class="tier-item" style="color:#E5C100">Time warping</span>
+            <span class="tier-item" style="color:#E5C100">Concentration</span>
+            <span class="tier-item" style="color:#E5C100">Bargaining</span>
+            <span class="tier-item" style="color:#E5C100">Mana control</span>
+            <span class="tier-item" style="color:#E5C100">Dark influence</span>
+            <span class="tier-item" style="color:#E5C100">Demon training</span>
+        </div>
+    </div>
+    <div class="tier-row">
+        <div class="tier-label" style="color:#55a630">A</div>
+        <div class="tier-items">
+            <span class="tier-item" style="color:#55a630">Productivity</span>
+            <span class="tier-item" style="color:#55a630">Immortality</span>
+            <span class="tier-item" style="color:#55a630">Super immortality</span>
+            <span class="tier-item" style="color:#55a630">Demon's wealth</span>
+            <span class="tier-item" style="color:#55a630">Intimidation</span>
+        </div>
+    </div>
+    <div class="tier-row">
+        <div class="tier-label" style="color:#2e94e7">B</div>
+        <div class="tier-items">
+            <span class="tier-item" style="color:#2e94e7">Meditation</span>
+            <span class="tier-item" style="color:#2e94e7">Strength</span>
+            <span class="tier-item" style="color:#2e94e7">Battle tactics</span>
+            <span class="tier-item" style="color:#2e94e7">Evil control</span>
+        </div>
+    </div>
+    <div class="tier-row">
+        <div class="tier-label" style="color:#888">C</div>
+        <div class="tier-items">
+            <span class="tier-item" style="color:#888">Muscle memory</span>
+            <span class="tier-item" style="color:#888">Blood meditation</span>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<h2>Balance Safety Rules</h2>
+
+<table>
+    <tr><th>Situation</th><th>Action</th></tr>
+    <tr><td>Income &lt; Expense</td><td>Downgrade housing or drop misc items immediately.</td></tr>
+    <tr><td>Switching to expensive housing</td><td>Ensure <code>income ≥ 2× new expense</code> as buffer.</td></tr>
+    <tr><td>Bargaining at level 0</td><td>Avoid any housing above Tent (15c/day).</td></tr>
+    <tr><td>Auto-promote enabled</td><td>Watch for Squire switch — it drops income to 5c/day.</td></tr>
+    <tr><td>Entering Military/Arcane track</td><td>Disable auto-promote and switch manually when income is stable.</td></tr>
+</table>
+
+<p style="color:#444; font-size:0.8em; margin-top:48px">Generated from Progress Knight source code — <code>main.js</code>, <code>classes.js</code></p>
+
+</body>
+</html>

@@ -431,8 +431,13 @@ async function generateRebirthReview() {
         addNotification(t('notif_no_credits_rebirth'));
         return;
     }
+    var lifeNum = getCurrentLifeNumber();
     var ctx = getGameContext();
     var prompt = buildRebirthReviewPrompt(ctx);
+
+    // Show loading modal immediately so the player sees something right away
+    showStoryModal(t('story_life_review') + ' — ' + getLifeLabel(lifeNum), t('story_review_loading'), null);
+
     var result = await callLLM(prompt);
 
     if (result && result.story) {
@@ -442,6 +447,7 @@ async function generateRebirthReview() {
             taskType: '',
             level: 0,
             day: gameData.days,
+            lifeNumber: lifeNum,
             text: result.story,
             effect: result.effect || null
         });
@@ -452,7 +458,11 @@ async function generateRebirthReview() {
 
         spendCredits(REBIRTH_STORY_COST);
 
-        showStoryModal(t('story_life_review'), result.story, result.effect);
+        // Update the already-open modal with real content
+        showStoryModal(t('story_life_review') + ' — ' + getLifeLabel(lifeNum), result.story, result.effect);
+        if (typeof updateStoryLogUI === 'function') updateStoryLogUI();
+    } else {
+        hideStoryModal();
     }
 }
 
@@ -509,11 +519,26 @@ function initStoryLog() {
         var eff = gameData.storyEffects[i];
         eff.value = Math.min(Math.max(parseFloat(eff.value) || 0.05, 0.01), 0.20);
     }
+    // Back-fill lifeNumber for entries from old saves that lack it
+    var life = 1;
+    for (var i = 0; i < gameData.storyLog.length; i++) {
+        if (!gameData.storyLog[i].lifeNumber) {
+            gameData.storyLog[i].lifeNumber = life;
+        }
+        if (gameData.storyLog[i].type === 'rebirth_review') {
+            life++;
+        }
+    }
+}
+
+function getCurrentLifeNumber() {
+    return (gameData.rebirthOneCount || 0) + (gameData.rebirthTwoCount || 0) + 1;
 }
 
 function addStoryEntry(entry) {
     initStoryLog();
     entry.id = Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+    entry.lifeNumber = getCurrentLifeNumber();
     gameData.storyLog.push(entry);
 }
 
@@ -524,15 +549,18 @@ function getRecentStories(count) {
 
 function getLifeStories() {
     initStoryLog();
-    // Stories from current life (since last rebirth - approximate by filtering entries without rebirth_review after the last rebirth_review)
-    var lastRebirthIndex = -1;
-    for (var i = gameData.storyLog.length - 1; i >= 0; i--) {
-        if (gameData.storyLog[i].type === 'rebirth_review') {
-            lastRebirthIndex = i;
-            break;
-        }
-    }
-    return gameData.storyLog.slice(lastRebirthIndex + 1);
+    var lifeNum = getCurrentLifeNumber();
+    return gameData.storyLog.filter(function(e) { return e.lifeNumber === lifeNum; });
+}
+
+function getStoriesForLife(lifeNum) {
+    initStoryLog();
+    return gameData.storyLog.filter(function(e) { return e.lifeNumber === lifeNum; });
+}
+
+function getTotalLives() {
+    initStoryLog();
+    return getCurrentLifeNumber();
 }
 
 // ============================================================
@@ -733,26 +761,32 @@ function describeEffect(effect) {
 // Story Log Tab
 // ============================================================
 
-function updateStoryLogUI() {
-    var container = document.getElementById('storyLogContent');
-    if (!container) return;
+var selectedStoryLife = null;
 
-    initStoryLog();
-    container.innerHTML = '';
+function getLifeLabel(lifeNum) {
+    var ordinals = [
+        'life_1','life_2','life_3','life_4','life_5',
+        'life_6','life_7','life_8','life_9','life_10'
+    ];
+    if (lifeNum >= 1 && lifeNum <= 10) {
+        return t(ordinals[lifeNum - 1]);
+    }
+    return t('life_n').replace('{n}', lifeNum);
+}
 
-    if (gameData.storyLog.length === 0) {
+function renderStoryCards(container, entries) {
+    if (entries.length === 0) {
         var empty = document.createElement('p');
         empty.style.color = 'gray';
         empty.textContent = t('story_no_stories');
         container.appendChild(empty);
         return;
     }
-
-    // Show stories in reverse chronological order
-    for (var i = gameData.storyLog.length - 1; i >= 0; i--) {
-        var entry = gameData.storyLog[i];
+    for (var i = entries.length - 1; i >= 0; i--) {
+        var entry = entries[i];
         var card = document.createElement('div');
         card.className = 'story-card';
+        if (entry.type === 'rebirth_review') card.className += ' story-card-rebirth';
 
         var header = document.createElement('div');
         header.className = 'story-card-header';
@@ -777,9 +811,52 @@ function updateStoryLogUI() {
             effectDiv.textContent = describeEffect(entry.effect);
             card.appendChild(effectDiv);
         }
-
         container.appendChild(card);
     }
+}
+
+function updateStoryLogUI() {
+    var container = document.getElementById('storyLogContent');
+    if (!container) return;
+
+    initStoryLog();
+    container.innerHTML = '';
+
+    var totalLives = getTotalLives();
+
+    if (gameData.storyLog.length === 0) {
+        var empty = document.createElement('p');
+        empty.style.color = 'gray';
+        empty.textContent = t('story_no_stories');
+        container.appendChild(empty);
+        return;
+    }
+
+    // Default to current life tab
+    if (selectedStoryLife === null || selectedStoryLife > totalLives) {
+        selectedStoryLife = totalLives;
+    }
+
+    // Build life tab bar
+    var tabBar = document.createElement('div');
+    tabBar.className = 'story-life-tabs';
+    for (var life = 1; life <= totalLives; life++) {
+        (function(lifeNum) {
+            var btn = document.createElement('button');
+            btn.className = 'story-life-tab' + (lifeNum === selectedStoryLife ? ' active' : '');
+            btn.textContent = getLifeLabel(lifeNum);
+            btn.onclick = function() {
+                selectedStoryLife = lifeNum;
+                updateStoryLogUI();
+            };
+            tabBar.appendChild(btn);
+        })(life);
+    }
+    container.appendChild(tabBar);
+
+    // Render stories for selected life
+    var entries = getStoriesForLife(selectedStoryLife);
+    renderStoryCards(container, entries);
 }
 
 // ============================================================

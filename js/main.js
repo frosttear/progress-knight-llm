@@ -759,6 +759,9 @@ function updateText() {
     document.getElementById("ageDisplay").textContent = daysToYears(gameData.days)
     document.getElementById("dayDisplay").textContent = getDay()
     document.getElementById("lifespanDisplay").textContent = daysToYears(getLifespan())
+    if (typeof getLifeLabel === 'function') {
+        document.getElementById("lifeDisplay").textContent = getLifeLabel(getCurrentLifeNumber())
+    }
     document.getElementById("pauseButton").textContent = gameData.paused ? t('sidebar_play') : t('sidebar_pause')
 
     formatCoins(gameData.coins, document.getElementById("coinDisplay"))
