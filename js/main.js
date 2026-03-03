@@ -1192,7 +1192,8 @@ function importGameData() {
     var importExportBox = document.getElementById("importExportBox")
     try {
         var raw = importExportBox.value.trim()
-        var json = decodeURIComponent(escape(window.atob(raw)))
+        var bytes = Uint8Array.from(window.atob(raw), function(c) { return c.charCodeAt(0) })
+        var json = new TextDecoder('utf-8').decode(bytes)
         var data = JSON.parse(json)
         gameData = data
         saveGameData()
@@ -1204,7 +1205,9 @@ function importGameData() {
 
 function exportGameData() {
     var importExportBox = document.getElementById("importExportBox")
-    var encoded = window.btoa(unescape(encodeURIComponent(JSON.stringify(gameData))))
+    var bytes = new TextEncoder().encode(JSON.stringify(gameData))
+    var binary = String.fromCharCode.apply(null, bytes)
+    var encoded = window.btoa(binary)
     importExportBox.value = encoded
     try {
         navigator.clipboard.writeText(encoded)
