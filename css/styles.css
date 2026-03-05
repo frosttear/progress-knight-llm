@@ -209,6 +209,17 @@ button:focus {
     margin-bottom: 2px;
 }
 
+#autoPromote,
+#autoLearn {
+    width: 18px;
+    height: 18px;
+    margin-left: 6px;
+    vertical-align: middle;
+    cursor: pointer;
+    accent-color: #4CAF50;
+    flex-shrink: 0;
+}
+
 /* ============================================================
    Responsive Layout
    ============================================================ */
