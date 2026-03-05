@@ -631,7 +631,7 @@ function updateHeaderRows(categories) {
 function getXpBreakdown(task) {
     var breakdown = []
     breakdown.push({name: t('xp_max_level_bonus'), value: task.getMaxLevelMultiplier()})
-    breakdown.push({name: tName('Happiness'), value: getHappiness()})
+    breakdown.push({name: tDesc('Happiness'), value: getHappiness()})
     breakdown.push({name: tName('Dark influence'), value: gameData.taskData["Dark influence"].getEffect()})
     breakdown.push({name: tName('Demon training'), value: gameData.taskData["Demon training"].getEffect()})
     if (typeof getStoryXpMultiplier === 'function') {
@@ -756,8 +756,10 @@ function updateCoinBonusDisplay() {
 
 function updateText() {
     //Sidebar
-    document.getElementById("ageDisplay").textContent = daysToYears(gameData.days)
-    document.getElementById("dayDisplay").textContent = getDay()
+    var ageDayFmt = t('age_day_format')
+    document.getElementById("ageDayDisplay").textContent = ageDayFmt
+        .replace('{age}', daysToYears(gameData.days))
+        .replace('{day}', getDay())
     document.getElementById("lifespanDisplay").textContent = daysToYears(getLifespan())
     if (typeof getLifeLabel === 'function') {
         document.getElementById("lifeDisplay").textContent = getLifeLabel(getCurrentLifeNumber())

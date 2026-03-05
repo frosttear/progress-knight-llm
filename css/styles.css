@@ -215,9 +215,10 @@ button:focus {
 
 .game-layout {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 0;
     align-items: flex-start;
+    max-width: 1220px;
 }
 
 .game-sidebar {
@@ -226,39 +227,43 @@ button:focus {
     height: auto;
 }
 
-.game-tab-bar {
+.game-right {
+    flex: 1;
+    min-width: 0;
     margin-left: 8px;
-    width: calc(100% - 316px);
+    display: flex;
+    flex-direction: column;
+}
+
+.game-tab-bar {
     height: 40px;
     overflow-x: auto;
     white-space: nowrap;
-    flex-shrink: 0;
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .game-main {
-    margin-left: 8px;
-    margin-top: 8px;
-    width: calc(100% - 316px);
+    min-width: 0;
     height: auto;
-    overflow-x: auto;
+    margin-top: 8px;
 }
 
-/* Sidebar quick-progress bars: fluid width */
+/* Sidebar quick-progress bars: cap at sidebar width on small screens */
 #quickTaskDisplay .progress-bar {
-    width: 100% !important;
+    max-width: 260px;
 }
 
-/* Main table progress bars: fluid */
-.game-main .progress-bar {
-    width: 100%;
-    min-width: 120px;
-}
-
-/* Tab bar: allow items to shrink/wrap on small screens */
+/* Tab bar items can shrink on narrow screens */
 .game-tab-bar .w3-bar-item {
     flex-shrink: 1;
+}
+
+/* Table wrapper: horizontal scroll on mobile without affecting desktop */
+.game-main-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* ---- Tablet (≤900px): sidebar goes full-width on top ---- */
@@ -272,8 +277,7 @@ button:focus {
         box-sizing: border-box;
     }
 
-    .game-tab-bar,
-    .game-main {
+    .game-right {
         width: 100%;
         margin-left: 0;
         box-sizing: border-box;
@@ -320,7 +324,11 @@ button:focus {
     }
 
     /* Make tables horizontally scrollable */
-    .game-main table {
+    .game-main-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .game-main-table-wrap table {
         min-width: 480px;
     }
 
