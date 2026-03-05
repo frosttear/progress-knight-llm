@@ -350,37 +350,8 @@
                                     <option value="deepseek">DeepSeek</option>
                                 </select>
                             </div>
-                            <div style="margin-bottom: 8px">
-                                <label data-i18n="settings_model">Model (optional): </label>
-                                <input type="text" id="llmModel" data-i18n-placeholder="settings_model_placeholder" placeholder="Leave empty for default" style="width: 200px; height: 30px" onchange="llmConfig.model = this.value; saveLLMConfig();">
-                            </div>
                             <div style="color: gray; font-size: small" data-i18n="settings_api_keys_note">API keys are configured server-side in the .env file.</div>
                             <div id="llmProviderStatus" style="color: gray; font-size: small; margin-top: 4px"></div>
-                        </li>
-                        <li>
-                            <h2 data-i18n="settings_credits_title">Story Credits</h2>
-                            <div style="margin-bottom: 8px; color: gray" data-i18n="settings_credits_desc">
-                                Each milestone story costs 1 credit. Each rebirth review costs 2 credits.
-                                New players start with 10 free credits.
-                            </div>
-                            <div style="margin-bottom: 8px">
-                                <label data-i18n="settings_redeem">Redeem Code: </label>
-                                <input type="text" id="redeemCodeInput" data-i18n-placeholder="settings_redeem_placeholder" placeholder="Enter code" style="width: 150px; height: 30px">
-                                <button class="w3-button button" style="height: 30px; padding: 0 12px" data-i18n="settings_redeem_btn" onclick="
-                                    var input = document.getElementById('redeemCodeInput');
-                                    var msg = document.getElementById('redeemMsg');
-                                    var result = redeemCode(input.value);
-                                    if (result.success) {
-                                        msg.textContent = '+' + result.amount + t('credits_added');
-                                        msg.style.color = '#55a630';
-                                        input.value = '';
-                                    } else {
-                                        msg.textContent = t('credits_invalid');
-                                        msg.style.color = '#e63946';
-                                    }
-                                ">Redeem</button>
-                                <span id="redeemMsg" style="font-size: small; margin-left: 8px"></span>
-                            </div>
                         </li>
                         <li>
                             <h2 data-i18n="settings_byok_title">Use Your Own API Key (BYOK)</h2>
@@ -443,7 +414,6 @@
         setTimeout(function() {
             var langEl = document.getElementById('llmLanguage');
             var provEl = document.getElementById('llmProvider');
-            var modelEl = document.getElementById('llmModel');
             var enabledEl = document.getElementById('llmEnabled');
             var useOwnKeyEl = document.getElementById('llmUseOwnKey');
             var ownKeyEl = document.getElementById('llmOwnApiKey');
@@ -451,7 +421,6 @@
             currentLanguage = llmConfig.language || 'en';
             if (langEl) langEl.value = llmConfig.language;
             if (provEl) provEl.value = llmConfig.provider;
-            if (modelEl) modelEl.value = llmConfig.model || '';
             if (enabledEl) enabledEl.checked = llmConfig.enabled;
             if (useOwnKeyEl) useOwnKeyEl.checked = llmConfig.useOwnKey;
             if (ownKeyEl) ownKeyEl.value = llmConfig.ownApiKey || '';
