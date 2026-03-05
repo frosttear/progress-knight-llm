@@ -144,7 +144,7 @@ function buildMilestonePrompt(taskName, taskType, newLevel, ctx) {
         + '- Current Skill: ' + ctx.currentSkill + ' (level ' + ctx.currentSkillLevel + ')\n'
         + '- Housing: ' + ctx.currentProperty + '\n'
         + '- Happiness: ' + ctx.happiness + ', Evil: ' + ctx.evil + '\n'
-        + '- Rebirths: ' + ctx.rebirthCount + ', Dark rebirths: ' + ctx.darkRebirthCount + '\n'
+        + '- Life number: ' + getCurrentLifeNumber() + ' (rebirths: ' + ctx.rebirthCount + ', dark: ' + ctx.darkRebirthCount + ')\n'
         + '- Top Jobs: ' + ctx.topJobs.slice(0, 5).map(function(j) { return j.name + '(' + j.level + ')'; }).join(', ') + '\n'
         + '- Top Skills: ' + ctx.topSkills.slice(0, 5).map(function(s) { return s.name + '(' + s.level + ')'; }).join(', ') + '\n\n'
         + 'VALID GAME ENTITIES (use these exact English names for "target"):\n'
@@ -174,7 +174,10 @@ function buildMilestonePrompt(taskName, taskType, newLevel, ctx) {
         + 'Do NOT translate or invent target names.\n'
         + 'Keep the effect value small (0.02-0.20). All effect types use the same scale: 0.05 means +5% bonus. '
         + 'The effect should thematically match the story. "life" duration means it lasts until next rebirth. '
-        + '"permanent" means it persists across rebirths.\n'
+        + '"permanent" means it persists across rebirths. '
+        + 'IMPORTANT: if Life number is 1 or 2, you MUST use "life" duration and keep value <= 0.08. '
+        + 'If Life number is 3 or 4, use "life" duration and keep value <= 0.12. '
+        + 'Only use "permanent" if Life number is 5 or higher.\n'
         + 'ONLY output the JSON, no other text.';
 
     return prompt;
@@ -392,37 +395,150 @@ function getFixedLevelUpText(taskName, taskType, level) {
     return tName(taskName) + template.replace('{level}', level);
 }
 
-async function generateMilestoneStory(taskName, taskType, newLevel) {
-    if (!hasEnoughCredits(MILESTONE_STORY_COST)) {
-        addNotification(t('notif_no_credits'));
-        return;
-    }
-    var ctx = getGameContext();
-    var prompt = buildMilestonePrompt(taskName, taskType, newLevel, ctx);
-    var result = await callLLM(prompt);
+// ============================================================
+// Pre-generated Story Fallback
+// ============================================================
 
-    if (result && result.story) {
-        // Add to story log
+var _fallbackStories = null;   // null = not loaded yet, false = load failed
+var _fallbackStoriesArr = [];  // raw array with history_bits for bitmask scoring
+
+// Bit position for each job — mirrors JOB_BIT_INDEX in generate_stories.py
+var _JOB_BIT = {
+    'Beggar': 0, 'Farmer': 1, 'Fisherman': 2, 'Miner': 3, 'Blacksmith': 4, 'Merchant': 5,
+    'Squire': 6, 'Footman': 7, 'Veteran footman': 8, 'Knight': 9,
+    'Veteran knight': 10, 'Elite knight': 11, 'Holy knight': 12, 'Legendary knight': 13,
+    'Student': 14, 'Apprentice mage': 15, 'Mage': 16,
+    'Wizard': 17, 'Master wizard': 18, 'Chairman': 19
+};
+
+function _playerHistoryBits() {
+    var bits = 0;
+    for (var name in gameData.taskData) {
+        var task = gameData.taskData[name];
+        if (task instanceof Job && task.maxLevel > 0) {
+            var idx = _JOB_BIT[name];
+            if (idx !== undefined) bits |= (1 << idx);
+        }
+    }
+    return bits;
+}
+
+function _popcount(n) {
+    var count = 0;
+    while (n) { count += n & 1; n >>>= 1; }
+    return count;
+}
+
+function _levelBand(level) {
+    if (level <= 10)  return 'low';
+    if (level <= 50)  return 'mid';
+    return 'high';
+}
+
+function _jobToSnake(taskName) {
+    return taskName.toLowerCase().replace(/\s+/g, '_');
+}
+
+async function _loadFallbackStories() {
+    if (_fallbackStories !== null) return;
+    var lang = llmConfig.language || 'en';
+    var file = (lang === 'zh') ? 'js/stories_zh.json' : 'js/stories_en.json';
+    try {
+        var res = await fetch(file);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        var arr = await res.json();
+        _fallbackStoriesArr = arr;
+        // Also build a fast key→text map for exact lookups
+        _fallbackStories = {};
+        for (var i = 0; i < arr.length; i++) {
+            _fallbackStories[arr[i].key] = arr[i];
+        }
+    } catch(e) {
+        console.warn('[Story] Fallback stories not available:', e.message);
+        _fallbackStories = false;
+    }
+}
+
+function _pickFallbackStory(taskName, level) {
+    if (!_fallbackStories || !_fallbackStoriesArr.length) return null;
+
+    var jobSnake  = _jobToSnake(taskName);
+    var band      = _levelBand(level);
+    var playerBits = _playerHistoryBits();
+
+    // Score every story entry — do not pre-filter so job match dominates
+    // Scoring weights:
+    //   +100  current job exact match (must-have; dominates everything)
+    //   +10   exact level band match
+    //   +popcount(player_bits & story_bits)  career history overlap (max 20)
+    var bestScore = -1;
+    var candidates = [];
+    for (var i = 0; i < _fallbackStoriesArr.length; i++) {
+        var c = _fallbackStoriesArr[i];
+        var score = 0;
+        if (c.key.indexOf(jobSnake) !== -1) score += 100;
+        if (c.key.indexOf('_' + band) !== -1) score += 10;
+        if (typeof c.history_bits === 'number') {
+            score += _popcount(playerBits & c.history_bits);
+        }
+        if (score > bestScore) { bestScore = score; candidates = [c]; }
+        else if (score === bestScore) { candidates.push(c); }
+    }
+    // Only return a result if we found at least a job match
+    if (!candidates.length || bestScore < 100) return null;
+    // Pick deterministically by life number + task name so:
+    //   - same life always gets the same story for a given task (consistent)
+    //   - different lives get different stories (variety across rebirths)
+    var seed = getCurrentLifeNumber() * 31 + taskName.length * 17 + level;
+    return candidates[seed % candidates.length];
+}
+
+async function generateMilestoneStory(taskName, taskType, newLevel) {
+    var hasKey = llmConfig.useOwnKey && llmConfig.ownApiKey;
+
+    // Try LLM path first
+    if (hasKey) {
+        if (!hasEnoughCredits(MILESTONE_STORY_COST)) {
+            addNotification(t('notif_no_credits'));
+            return;
+        }
+        var ctx = getGameContext();
+        var prompt = buildMilestonePrompt(taskName, taskType, newLevel, ctx);
+        var result = await callLLM(prompt);
+
+        if (result && result.story) {
+            addStoryEntry({
+                type: 'milestone',
+                taskName: taskName,
+                taskType: taskType,
+                level: newLevel,
+                day: gameData.days,
+                text: result.story,
+                effect: result.effect || null
+            });
+            if (result.effect) applyStoryEffect(result.effect);
+            spendCredits(MILESTONE_STORY_COST);
+            showStoryModal(tName(taskName) + ' — ' + t('level_word') + ' ' + newLevel, result.story, result.effect);
+            return;
+        }
+    }
+
+    // Fallback: use pre-generated story
+    await _loadFallbackStories();
+    var fallback = _pickFallbackStory(taskName, newLevel);
+    if (fallback) {
+        var fallbackEffect = fallback.effect || null;
         addStoryEntry({
             type: 'milestone',
             taskName: taskName,
             taskType: taskType,
             level: newLevel,
             day: gameData.days,
-            text: result.story,
-            effect: result.effect || null
+            text: fallback.text,
+            effect: fallbackEffect
         });
-
-        // Apply effect
-        if (result.effect) {
-            applyStoryEffect(result.effect);
-        }
-
-        // Spend credit only on success
-        spendCredits(MILESTONE_STORY_COST);
-
-        // Show modal
-        showStoryModal(tName(taskName) + ' — ' + t('level_word') + ' ' + newLevel, result.story, result.effect);
+        if (fallbackEffect) applyStoryEffect(fallbackEffect);
+        showStoryModal(tName(taskName) + ' — ' + t('level_word') + ' ' + newLevel, fallback.text, fallbackEffect);
     }
 }
 
@@ -593,20 +709,43 @@ function normalizeEffectType(type) {
     return type;
 }
 
+function scaleEffectForLife(rawValue, requestedDuration) {
+    var lifeNum = getCurrentLifeNumber();
+    var valueScale, duration;
+    if (lifeNum <= 2) {
+        // Early lives: small bonuses, never permanent
+        valueScale = 0.5;
+        duration = 'life';
+    } else if (lifeNum <= 4) {
+        // Mid-early lives: slightly larger, still no permanent
+        valueScale = 0.75;
+        duration = 'life';
+    } else {
+        // Life 5+: full value, permanent allowed
+        valueScale = 1.0;
+        duration = requestedDuration || 'life';
+    }
+    return {
+        value: Math.min(Math.max(rawValue * valueScale, 0.01), 0.20),
+        duration: duration
+    };
+}
+
 function applyStoryEffect(effect) {
     if (!effect || !effect.type) return;
     initStoryLog();
 
     var rawValue = parseFloat(effect.value) || 0.05;
+    var scaled = scaleEffectForLife(rawValue, effect.duration);
     var storyEffect = {
         type: normalizeEffectType(effect.type),
         target: resolveTargetName(effect.target),
-        value: Math.min(Math.max(rawValue, 0.01), 0.20),
-        duration: effect.duration || 'life',
+        value: scaled.value,
+        duration: scaled.duration,
         applied: true
     };
 
-    console.log('[Story] Applied effect:', JSON.stringify(storyEffect), 'Total effects:', gameData.storyEffects.length + 1);
+    console.log('[Story] Life ' + getCurrentLifeNumber() + ' effect:', JSON.stringify(storyEffect), 'Total effects:', gameData.storyEffects.length + 1);
     gameData.storyEffects.push(storyEffect);
     recalculateStoryMultipliers();
 }

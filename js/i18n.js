@@ -36,6 +36,8 @@ function setLanguage(lang) {
     llmConfig.language = lang;
     saveLLMConfig();
     applyLanguageToUI();
+    // Reset fallback story cache so next load uses the new language file
+    if (typeof _fallbackStories !== 'undefined') _fallbackStories = null;
 }
 
 function applyLanguageToUI() {

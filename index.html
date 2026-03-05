@@ -327,13 +327,15 @@
                             </a>
                         </li>
                         <li>
-                            <h2 data-i18n="settings_llm_title">LLM Story Settings</h2>
-                            <div style="margin-bottom: 8px">
-                                <label data-i18n="settings_story_gen">Story Generation: </label>
+                            <h2 data-i18n="settings_llm_title">Story Settings</h2>
+
+                            <!-- Enable / Language row -->
+                            <div style="margin-bottom: 10px">
+                                <label data-i18n="settings_story_gen">Enable Stories: </label>
                                 <input type="checkbox" id="llmEnabled" checked onchange="llmConfig.enabled = this.checked; saveLLMConfig();">
-                                <span style="color: gray" data-i18n="settings_story_gen_desc"> Enable AI-generated stories at milestone levels</span>
+                                <span style="color: gray; font-size: small" data-i18n="settings_story_gen_desc"> Show story events at milestone levels</span>
                             </div>
-                            <div style="margin-bottom: 8px">
+                            <div style="margin-bottom: 14px">
                                 <label data-i18n="settings_language">Language: </label>
                                 <select id="llmLanguage" onchange="setLanguage(this.value);" style="height: 30px; width: 150px">
                                     <option value="en">English</option>
@@ -342,40 +344,68 @@
                                     <option value="ko">한국어</option>
                                 </select>
                             </div>
-                            <div style="margin-bottom: 8px">
-                                <label data-i18n="settings_provider">Provider: </label>
-                                <select id="llmProvider" onchange="llmConfig.provider = this.value; saveLLMConfig();" style="height: 30px; width: 150px">
-                                    <option value="xai">xAI (Grok)</option>
-                                    <option value="openai">OpenAI</option>
-                                    <option value="deepseek">DeepSeek</option>
-                                </select>
+
+                            <!-- Story Mode -->
+                            <div style="font-weight: bold; margin-bottom: 8px" data-i18n="settings_story_mode_label">Story Mode:</div>
+
+                            <!-- Option 1: Pre-generated -->
+                            <div style="border: 1px solid #ccc; border-radius: 6px; padding: 10px 14px; margin-bottom: 8px; cursor: pointer"
+                                 onclick="document.getElementById('llmUseOwnKey').checked = false; llmConfig.useOwnKey = false; saveLLMConfig(); updateCreditDisplay(); document.getElementById('byokSection').style.display='none';">
+                                <label style="cursor: pointer">
+                                    <input type="radio" name="storyMode" id="storyModePregen" value="pregenerated"
+                                           onchange="llmConfig.useOwnKey = false; saveLLMConfig(); updateCreditDisplay(); document.getElementById('byokSection').style.display='none';">
+                                    <strong data-i18n="settings_story_mode_pregenerated">Pre-generated (no API key needed)</strong>
+                                </label>
+                                <div style="color: gray; font-size: small; margin-top: 4px; margin-left: 20px" data-i18n="settings_story_mode_pregenerated_desc">
+                                    Uses curated stories matched to your career path and level.
+                                </div>
                             </div>
-                            <div style="color: gray; font-size: small" data-i18n="settings_api_keys_note">API keys are configured server-side in the .env file.</div>
-                            <div id="llmProviderStatus" style="color: gray; font-size: small; margin-top: 4px"></div>
-                        </li>
-                        <li>
-                            <h2 data-i18n="settings_byok_title">Use Your Own API Key (BYOK)</h2>
-                            <div style="margin-bottom: 8px; color: gray" data-i18n="settings_byok_desc">
-                                Supply your own API key to bypass the credit system. Your key is stored locally in your browser only.
+
+                            <!-- Option 2: Real-time BYOK -->
+                            <div style="border: 1px solid #ccc; border-radius: 6px; padding: 10px 14px; margin-bottom: 4px; cursor: pointer"
+                                 onclick="document.getElementById('llmUseOwnKey').checked = true; llmConfig.useOwnKey = true; saveLLMConfig(); updateCreditDisplay(); document.getElementById('byokSection').style.display='block';">
+                                <label style="cursor: pointer">
+                                    <input type="radio" name="storyMode" id="storyModeByok" value="byok"
+                                           onchange="llmConfig.useOwnKey = true; saveLLMConfig(); updateCreditDisplay(); document.getElementById('byokSection').style.display='block';">
+                                    <strong data-i18n="settings_story_mode_byok">Real-time AI (BYOK — use your own API key)</strong>
+                                </label>
+                                <div style="color: gray; font-size: small; margin-top: 4px; margin-left: 20px" data-i18n="settings_story_mode_byok_desc">
+                                    Each milestone generates a unique story personalised to your character in real time. Requires an API key from xAI, OpenAI, or DeepSeek.
+                                </div>
+
+                                <!-- BYOK inputs, shown only when this mode is selected -->
+                                <div id="byokSection" style="display: none; margin-top: 12px; margin-left: 20px">
+                                    <div style="margin-bottom: 8px">
+                                        <label data-i18n="settings_provider">Provider: </label>
+                                        <select id="llmProvider" onchange="llmConfig.provider = this.value; saveLLMConfig();" style="height: 30px; width: 160px">
+                                            <option value="xai">xAI (Grok)</option>
+                                            <option value="openai">OpenAI</option>
+                                            <option value="deepseek">DeepSeek</option>
+                                        </select>
+                                    </div>
+                                    <div style="margin-bottom: 8px">
+                                        <label data-i18n="settings_api_key">API Key: </label>
+                                        <input type="password" id="llmOwnApiKey" data-i18n-placeholder="settings_api_key_placeholder" placeholder="sk-... or xai-..." style="width: 280px; height: 30px" onchange="
+                                            llmConfig.ownApiKey = this.value;
+                                            saveLLMConfig();
+                                            updateCreditDisplay();
+                                        ">
+                                    </div>
+                                    <div style="color: gray; font-size: small" data-i18n="settings_api_key_storage_note">
+                                        Your key is stored in your browser only and sent directly to the provider.
+                                    </div>
+                                </div>
                             </div>
-                            <div style="margin-bottom: 8px">
-                                <label data-i18n="settings_use_own_key">Use own key: </label>
-                                <input type="checkbox" id="llmUseOwnKey" onchange="
-                                    llmConfig.useOwnKey = this.checked;
-                                    saveLLMConfig();
-                                    updateCreditDisplay();
-                                    document.getElementById('ownKeySection').style.display = this.checked ? 'block' : 'none';
-                                ">
-                            </div>
-                            <div id="ownKeySection" style="display: none; margin-bottom: 8px">
-                                <label data-i18n="settings_api_key">API Key: </label>
-                                <input type="password" id="llmOwnApiKey" data-i18n-placeholder="settings_api_key_placeholder" placeholder="sk-... or xai-..." style="width: 300px; height: 30px" onchange="
-                                    llmConfig.ownApiKey = this.value;
-                                    saveLLMConfig();
-                                    updateCreditDisplay();
-                                ">
-                                <div style="color: gray; font-size: small; margin-top: 4px" data-i18n="settings_api_key_note">Key is stored in localStorage only. Never sent anywhere except to the selected LLM provider via the proxy.</div>
-                            </div>
+
+                            <!-- hidden checkbox kept for JS compat -->
+                            <input type="checkbox" id="llmUseOwnKey" style="display:none" onchange="
+                                llmConfig.useOwnKey = this.checked;
+                                saveLLMConfig();
+                                updateCreditDisplay();
+                                document.getElementById('byokSection').style.display = this.checked ? 'block' : 'none';
+                                document.getElementById('storyModeByok').checked = this.checked;
+                                document.getElementById('storyModePregen').checked = !this.checked;
+                            ">
                         </li>
                         <li>
                             <h2 data-i18n="settings_hard_reset">Hard reset game</h2>
@@ -412,57 +442,33 @@
     // Sync LLM config UI after load
     document.addEventListener('DOMContentLoaded', function() {
         setTimeout(function() {
-            var langEl = document.getElementById('llmLanguage');
-            var provEl = document.getElementById('llmProvider');
+            var langEl    = document.getElementById('llmLanguage');
+            var provEl    = document.getElementById('llmProvider');
             var enabledEl = document.getElementById('llmEnabled');
-            var useOwnKeyEl = document.getElementById('llmUseOwnKey');
-            var ownKeyEl = document.getElementById('llmOwnApiKey');
-            var ownKeySec = document.getElementById('ownKeySection');
+            var ownKeyEl  = document.getElementById('llmOwnApiKey');
+            var byokSec   = document.getElementById('byokSection');
+            var radioPregen = document.getElementById('storyModePregen');
+            var radioByok   = document.getElementById('storyModeByok');
+
             currentLanguage = llmConfig.language || 'en';
-            if (langEl) langEl.value = llmConfig.language;
-            if (provEl) provEl.value = llmConfig.provider;
+            if (langEl)    langEl.value    = llmConfig.language;
+            if (provEl)    provEl.value    = llmConfig.provider;
             if (enabledEl) enabledEl.checked = llmConfig.enabled;
-            if (useOwnKeyEl) useOwnKeyEl.checked = llmConfig.useOwnKey;
-            if (ownKeyEl) ownKeyEl.value = llmConfig.ownApiKey || '';
-            if (ownKeySec) ownKeySec.style.display = llmConfig.useOwnKey ? 'block' : 'none';
+            if (ownKeyEl)  ownKeyEl.value  = llmConfig.ownApiKey || '';
+
+            // Sync radio buttons and BYOK section visibility
+            if (llmConfig.useOwnKey) {
+                if (radioByok)   radioByok.checked   = true;
+                if (byokSec)     byokSec.style.display = 'block';
+            } else {
+                if (radioPregen) radioPregen.checked  = true;
+                if (byokSec)     byokSec.style.display = 'none';
+            }
 
             updateCreditDisplay();
             updateMilestoneIndicator();
             applyLanguageToUI();
             updateRebirthDescriptions();
-
-            // Auto-fetch env API key for local dev: enable BYOK with server-side key
-            fetch('/api/config').then(function(r) { return r.json(); }).then(function(cfg) {
-                if (cfg.apiKey && !llmConfig.ownApiKey) {
-                    llmConfig.useOwnKey = true;
-                    llmConfig.ownApiKey = cfg.apiKey;
-                    if (cfg.provider) llmConfig.provider = cfg.provider;
-                    saveLLMConfig();
-                    // Sync UI
-                    if (useOwnKeyEl) useOwnKeyEl.checked = true;
-                    if (ownKeyEl) ownKeyEl.value = cfg.apiKey;
-                    if (ownKeySec) ownKeySec.style.display = 'block';
-                    if (provEl) provEl.value = cfg.provider;
-                    updateCreditDisplay();
-                    var statusEl = document.getElementById('llmProviderStatus');
-                    if (statusEl) {
-                        statusEl.textContent = 'Auto-configured from .env: ' + cfg.provider;
-                        statusEl.style.color = '#55a630';
-                    }
-                }
-            }).catch(function() { /* /api/config not available (e.g. GitHub Pages) */ });
-
-            // Show provider status
-            fetchAvailableProviders().then(function(providers) {
-                var statusEl = document.getElementById('llmProviderStatus');
-                if (statusEl && providers.length > 0) {
-                    statusEl.textContent = t('providers_available') + providers.map(function(p) { return p.name; }).join(', ');
-                    statusEl.style.color = '#55a630';
-                } else if (statusEl) {
-                    statusEl.textContent = t('providers_none');
-                    statusEl.style.color = '#e63946';
-                }
-            });
         }, 500);
     });
 </script>

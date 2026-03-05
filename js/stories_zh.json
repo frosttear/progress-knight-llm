@@ -1,0 +1,632 @@
+[
+  {
+    "key": "common_beggar_low",
+    "text": "你从一无所有中醒来，赤贫之身却怀揣不屈的意志。街头巷尾的风霜是你最初的试炼，每一枚铜币都凝聚着你的汗水与坚持。如今，你刚踏上旅途，卑微如尘，却心怀星辰大海。你的眼神中燃起微光，那是希望的火种。未来，更多的挑战等待着你去征服，去证明自己的价值！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Beggar",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_beggar_mid",
+    "text": "你曾是街头的乞者，风餐露宿，却从未低头。无数个日夜，你学会了观察，学会了生存。如今，你已是一名经验丰富的行者，街头的小道消息如掌上纹路般熟悉。你的坚韧令人敬佩，但前方仍有未知的命运在召唤。继续前行吧，属于你的传奇尚未书写！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Beggar",
+      "value": 0.07,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_beggar_high",
+    "text": "你从贫穷的深渊中崛起，街头的每一块石头都见证了你的挣扎与成长。如今，你已精通生存之道，成为乞者中的大师，目光如炬，心如磐石。你的故事感动了路人，也激励了无数人。更大的舞台在前方等待，勇敢迈步吧，命运之门将为你敞开！",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_farmer_low",
+    "text": "你曾是街头的乞者，如今握起锄头，踏上田野。土地的芬芳是你新的征途，每一滴汗水都滋养着希望的种子。刚开始的你虽生疏，却满怀信念，愿将贫穷的过去埋葬于泥土之下。未来，丰收的号角将在你手中吹响，继续耕耘吧！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Farmer",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_farmer_mid",
+    "text": "你从乞讨到耕种，双手已染上泥土的粗糙。如今，你是一名经验老道的农夫，懂得风吹草动的征兆，田间的每一株作物都诉说着你的辛勤。你的背影如山，坚实而可靠。更大的田野在前方等待，去开拓吧，丰收的辉煌属于你！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Farmer",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_farmer_high",
+    "text": "你从街头乞者蜕变为田野之主，土地在你手中焕发生机。如今，你是农艺的大师，每一季的丰收都是你不屈意志的证明。你的名字在村庄传颂，如同丰收之神。前方还有更广阔的天地，去征服吧，你的传奇将永不凋零！",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Farmer",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_fisherman_low",
+    "text": "你曾是乞者，也曾耕田，如今站在湖畔，握紧渔竿。波光粼粼的水面是你新的战场，每一网鱼都是对过往苦难的回击。刚起步的你虽不熟练，但心怀壮志，愿以江河为证，书写新篇。继续扬帆吧，深海的宝藏在等待！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Fisherman",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_fisherman_mid",
+    "text": "你从田野走向江河，历经贫穷与劳作，如今已成为一名熟练的渔夫。湖海的风浪是你熟悉的歌谣，每一次出航都满载而归。你的坚韧如礁石，屹立不倒。更大的风浪在前方呼唤，扬帆远航吧，属于你的海洋传奇即将展开！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Fisherman",
+      "value": 0.07,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_fisherman_high",
+    "text": "你从乞者到农夫，再到江河之王，浪涛见证了你的成长。如今，你是渔业的大师，每一网都是丰收的颂歌，湖海为你歌唱。你的名字如潮汐般传扬，令人敬畏。无尽的深海在前方，勇敢探索吧，传奇的航程永不终结！",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Fisherman",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_miner_low",
+    "text": "你曾乞讨、耕田、捕鱼，如今深入地心，挥动矿镐。黑暗的矿洞是你新的试炼场，每一块矿石都承载着过往的汗水。刚开始的你虽感陌生，但意志如铁，誓要掘出命运之光。继续挖掘吧，地下的宝藏将为你闪耀！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Miner",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_miner_mid",
+    "text": "你从街头到田野，再到湖海，如今在地底挥汗如雨。经验丰富的你已熟悉矿洞的脉络，每一击都精准有力。你的双手粗糙如石，却握着不屈的信念。更深的矿脉在召唤，勇往直前吧，财富与荣耀将属于你！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Miner",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_miner_high",
+    "text": "你从一无所有到地底之王，历经无数辛劳，如今成为矿业的大师。每一块珍稀矿石都诉说着你的传奇，矿洞的回响为你歌颂。你的意志如钻石般坚硬，永不磨灭。更深的地心在等待，挖掘吧，属于你的辉煌将照亮黑暗！",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Miner",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_blacksmith_low",
+    "text": "你曾是乞者、农夫、渔夫、矿工，如今站在铁砧前，锤声如雷。烈焰是你新的征途，每一块铁器都铭刻着你的过去。刚起步的你虽显笨拙，但心中烈火熊熊，誓要锻造出命运之刃。继续敲打吧，辉煌之作将在你手中诞生！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Blacksmith",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_blacksmith_mid",
+    "text": "你从贫穷走向铁砧，历经无数辛劳，如今是一名经验老道的铁匠。烈焰与铁锤是你最忠实的伙伴，每一件作品都闪耀着你的汗水。你的力量如钢，坚不可摧。更伟大的锻造在前方，挥动铁锤吧，属于你的不朽之作即将问世！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Blacksmith",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_blacksmith_high",
+    "text": "你从街头乞者到铁匠大师，烈焰见证了你的蜕变。如今，你是锻造之神，每一柄利刃、每一件铠甲都如艺术品般完美。你的名字随兵器传颂，震慑四方。更伟大的挑战在前方，点燃炉火吧，铸就属于你的永恒传奇！",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Blacksmith",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_merchant_low",
+    "text": "你从一无所有起步，曾经是乞丐、农夫、渔夫、矿工和铁匠，双手沾满泥土与汗水。如今，你踏上商人之道，初窥买卖的奥秘。你的过去塑造了坚韧的意志，每一笔交易都承载着昔日的辛劳。你的目光如鹰隼般锐利，洞察市场风云。未来，广阔的商路等待你开拓，你将用智慧与胆识书写属于自己的传奇。继续前行吧，初生的商人！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Merchant",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_merchant_mid",
+    "text": "你曾以农夫的双手耕耘大地，以矿工的臂膀开凿深岩，历经乞丐的卑微与铁匠的烈焰。如今，你是经验丰富的商人，市场如战场，你游刃有余。每一场交易都淬炼了你的智慧，每一枚金币都铭刻着你的奋斗。你的名字已在商圈传开，但这只是起点。前方，更多的财富与挑战在召唤你，准备好迎接更大的风浪吧！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Merchant",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_merchant_high",
+    "text": "你从卑微的乞丐到辛勤的农夫，从渔夫的孤舟到铁匠的炉火，历经百般磨砺，成为商界的宗师。你的商号如雷贯耳，财富如山川汇聚。你的智慧堪比古贤，每一决策皆是传奇。你用汗水与信念铸就今日辉煌，但征途未尽。远方的异域商路、未知的宝藏在低语，伟大的商人，扬帆远航，书写不朽篇章吧！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Merchant",
+      "value": 0.12,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_squire_low",
+    "text": "你抛弃了平凡的乡野生活，背负长剑，踏上军旅之路，成为一名新晋侍从。你的双手虽未染血，但心中燃起荣耀之火。战鼓初响，你怀揣梦想，渴望在沙场上证明自己。每一滴汗水都是对未来的承诺，每一次挥剑都在淬炼你的灵魂。勇士啊，前方有无尽试炼等待，握紧武器，迈出第一步吧！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Squire",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_squire_mid",
+    "text": "你已不再是军营中的新兵，作为经验丰富的侍从，你在训练中磨砺了筋骨，在教官的严苛下铸就了意志。平凡的日子已被你抛在身后，战火的召唤在耳边回响。你的剑术日渐精湛，每一次对决都让你更接近荣耀。勇士，未来的战场正等待着你的到来，继续锤炼自己，迎接真正的试炼吧！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Squire",
+      "value": "0.08",
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_squire_high",
+    "text": "你以侍从之名，历经无数磨砺，剑术与纪律已臻化境。平凡的过往已被你彻底割舍，荣耀的火焰在你胸中熊熊燃烧。你的名字在军营中传颂，每一击都展现出无与伦比的精湛技艺。你已掌握侍从之道，但更大的命运在召唤。勇士，战场的号角即将吹响，准备迎接更高的荣光吧！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Squire",
+      "value": 0.12,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_footman_low",
+    "text": "你从侍从的苦训中脱颖而出，成为一名新晋步兵，战火的洗礼在你眼前展开。你的身体与意志已接受淬炼，战场的号角是你新的信仰。每一场战斗都是试炼，每一道伤痕都是勋章。你的长矛初次染血，但心志坚如磐石。勇士啊，前方有更多敌人等待你征服，握紧武器，踏上征程吧！",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Footman",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_footman_mid",
+    "text": "你从侍从晋升为步兵，沙场上的风雨已让你成长为一名老练战士。你的长矛刺穿敌阵，你的盾牌守护同袍。战火中，你学会了生存与牺牲，每一场胜利都铭刻在你的骨血中。你的名字在军中渐有声望，但征途未尽。勇士，继续挥舞武器，前方的敌军正等待你的怒吼！",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Footman",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_footman_high",
+    "text": "你从侍从到步兵，历经战火洗礼，成为战场上的不屈之魂。你的长矛如雷霆，盾牌如山岳，每一战都书写着你的传奇。敌军闻你之名而胆寒，同袍视你为依靠。你已掌握步兵之道，但荣耀之路尚未终结。勇士，更高的军阶在召唤，准备迎接新的挑战吧！",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Footman",
+      "value": 0.12,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_veteran_footman_low",
+    "text": "你从侍从到步兵，再到老练的资深步兵，战火与鲜血铸就了你的铁血之躯。无数战役淬炼了你的意志，每一道伤痕都是荣耀的印记。你初踏资深之阶，军中已视你为中坚力量。你的战吼震慑敌胆，但征途未尽。勇士，前方有更艰苦的战斗，握紧武器，迎接新的试炼吧！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Veteran Footman",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_veteran_footman_mid",
+    "text": "你历经侍从与步兵的磨砺，成为一名经验丰富的资深步兵。战场的每一次搏杀都让你更坚韧，你的战技已炉火纯青。你的名字在军中传颂，敌军闻风丧胆。每一场胜利都增添你的威名，但你心知征程未完。勇士，前方的战火更为炽烈，继续前行，书写不朽战歌吧！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Veteran Footman",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_veteran_footman_high",
+    "text": "你从侍从到步兵，再到资深步兵之巅，战火中的每一步都铸就了你的不朽传说。你的长矛如死神之镰，盾牌如不破之壁，战场上无人能敌。你已臻至资深步兵之极，但更高的荣耀在召唤。勇士，军阶的顶峰近在咫尺，准备迎接最终的荣光吧！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Veteran Footman",
+      "value": 0.12,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_knight_low",
+    "text": "你从侍从起步，历经步兵与资深步兵的血战，终于成为一名新晋骑士。你的铠甲闪耀荣耀之光，长剑承载无数战役的重量。初登骑士之位，你的威名已初露锋芒，但你心知这只是新的开始。勇士，未来的战场更为广阔，握紧缰绳，准备为王国赢得不朽荣光吧！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Knight",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_knight_mid",
+    "text": "你从侍从到资深步兵，浴血奋战无数，终于成为经验丰富的骑士。你的战马嘶鸣如雷，剑光所及皆是敌军的绝望。你的名字传遍王国，每一战都增添你的传奇。你已屹立于骑士之列，但征途未尽。勇士，更高的荣誉与更强的敌人在前方，策马扬鞭，迎接挑战吧！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Knight",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_knight_high",
+    "text": "你从卑微的侍从到资深步兵，历经血与火的洗礼，成为骑士之巅的传奇。你的铠甲如日辉般耀眼，长剑如天罚般无敌。你的名字已刻入王国史册，每一战都是不朽篇章。你已掌握骑士之道，但传说尚未终结。勇士，史诗的顶峰在召唤，扬起战旗，成就永恒吧！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Knight",
+      "value": 0.12,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_veteran_knight_low",
+    "text": "你曾是侍从，步兵，久经沙场的勇士，如今成为一名资深骑士。无数战役的洗礼铸就了你的意志，刀剑之声仍在耳畔回响。你刚刚踏上资深骑士的征途，肩负着无尽的荣光与责任。每一次挥剑，都是对过去的致敬，也是对未来的承诺。你的传奇之路才刚刚开始，前方有更大的挑战等待着你，去征服那无尽的战场吧！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Veteran Knight",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_veteran_knight_mid",
+    "text": "你从侍从到步兵，再到资深骑士，历经无数血与火的试炼，积累了丰富的经验。你的剑刃已染满敌人的鲜血，战场上的每一步都彰显你的坚韧。如今，你在资深骑士的道路上愈发熟练，力量与智慧并存。未来的征途更加艰险，但你已准备好迎接一切挑战，书写属于你的史诗篇章！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Veteran Knight",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_veteran_knight_high",
+    "text": "你从最卑微的侍从成长为资深骑士，战场上的每一次胜利都镌刻在你的灵魂之中。如今，你已精通骑士之道，剑术与勇气无人能敌。你的名字在军营中传颂，成为士兵们的信仰。然而，传奇之路尚未终结，更高的荣耀在召唤你，前方的战斗将是你不朽的试炼！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Veteran Knight",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_elite_knight_low",
+    "text": "你从侍从起步，历经步兵与骑士的磨砺，如今成为精英骑士。无数战役的硝烟仍在你眼中燃烧，你的力量与意志已超越常人。刚踏上精英骑士之路的你，肩负着更高的使命。每一次战斗都是对过去的回顾，也是对未来的宣誓。前方有更伟大的征程等待着你，勇士，去夺取属于你的荣光吧！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Elite Knight",
+      "value": 0.06,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_elite_knight_mid",
+    "text": "你曾是侍从、步兵，历经资深骑士的洗礼，如今成为一名经验丰富的精英骑士。战场上的每一道伤痕都是你的勋章，你的剑已能劈开最坚硬的防线。你在精英骑士之路上越发稳健，力量与智慧相得益彰。前方的敌人更加强大，但你的意志不可动摇，继续战斗吧，荣耀在等待！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Elite Knight",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_elite_knight_high",
+    "text": "你从侍从到精英骑士，战场的每一寸土地都铭刻着你的足迹。如今，你已掌握精英骑士的至高技艺，剑光如虹，敌人闻风丧胆。你的名字成为传说的开端，但你并未止步。更伟大的试炼在前方等待，拿起你的武器，勇士，去书写不朽的传奇吧！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Elite Knight",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_holy_knight_low",
+    "text": "你从侍从到精英骑士，历经无数战火洗礼，如今成为神圣骑士。圣光眷顾着你，你的剑不仅为荣耀而战，更为信仰而战。刚踏上神圣骑士之路的你，心中燃起无尽的信念之火。过去的征程只是序章，未来的挑战将更加神圣。勇士，拿起你的圣剑，前方是光明与黑暗的交锋！",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Holy Knight",
+      "value": 0.07,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_holy_knight_mid",
+    "text": "你曾是侍从、步兵，历经精英骑士的试炼，如今成为经验丰富的神圣骑士。圣光在你心中燃烧，驱散一切黑暗。你的剑术与信仰已融为一体，每一击都充满神圣之力。你在神圣骑士之路上稳步前行，但更大的试炼仍在前方。勇士，迎接光明之路的挑战吧！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Holy Knight",
+      "value": 0.09,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_holy_knight_high",
+    "text": "你从侍从到神圣骑士，历经无尽战火与信仰的淬炼，如今成为圣光化身。你的剑刃闪耀着神圣的光辉，敌人望而生畏。你的名字被吟唱于圣殿之中，但你未曾停下脚步。黑暗的深渊在前方咆哮，勇士，举起你的圣剑，驱散那无尽的阴影吧！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Holy Knight",
+      "value": 0.12,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_legendary_knight_low",
+    "text": "你从侍从到神圣骑士，战火与圣光铸就了你的不朽之名，如今成为传奇骑士。你的每一步都铭刻在史诗之中，刚刚踏上传奇之路的你，肩负着无上的荣耀。过去的征程只是起点，未来的挑战将决定你的永恒地位。勇士，挥动你的传奇之剑，书写不朽篇章！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Legendary Knight",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_legendary_knight_mid",
+    "text": "你从侍从到神圣骑士，历经无数战役与试炼，如今成为经验丰富的传奇骑士。你的名字已被载入史册，每一剑都撼动天地。你在传奇骑士之路上稳步前行，力量与荣耀无人可及。然而，更大的命运在前方召唤，勇士，继续你的征程，成就永恒的传说！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Legendary Knight",
+      "value": 0.13,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_legendary_knight_high",
+    "text": "你从侍从到传奇骑士，战火与圣光见证了你的无上荣光。如今，你已精通传奇骑士之道，你的剑刃能撕裂天穹，敌人闻名丧胆。你的传说响彻大地，但最终的试炼仍在前方。勇士，拿起你的武器，去面对那终极的命运，成就永恒的不朽！",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Legendary Knight",
+      "value": 0.15,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_student_low",
+    "text": "你曾沉浸于多年的冥想，终于发现魔法的天赋，如今成为一名魔法学徒。神秘的奥术之门刚刚向你敞开，你的内心燃起求知的火焰。过去的冥想岁月是你力量的根基，而现在，你将迈出魔法之路的第一步。前方是无尽的知识与力量，学徒，握紧你的法杖，开启你的奥秘之旅吧！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Student",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_student_mid",
+    "text": "你曾多年冥想，探寻魔法的真谛，如今成为一名经验丰富的魔法学徒。奥术的低语在你耳边回响，你已能施展初级的魔法，感受那无形的力量。过去的沉思为你奠定了根基，而现在的你已逐渐熟悉魔法的奥秘。前方有更深的知识等待，学徒，继续钻研，揭开魔法更深层次的面纱！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Student",
+      "value": 0.07,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_student_high",
+    "text": "你从漫长的冥想中觉醒，发现魔法的天赋，如今成为精通学艺的魔法学徒。奥术的力量在你指尖流转，你已能驾驭初级魔法，展现出惊人的潜能。过去的岁月是你力量的源泉，而现在，你已接近学徒之路的巅峰。前方是更高深的魔法领域，学徒，准备好迎接真正的奥秘挑战吧！",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Student",
+      "value": 0.09,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_apprentice_mage_low",
+    "text": "你曾是平凡的学生，抛却俗世琐事，踏入奥术协会的圣殿。初握魔法之杖，你的手指微微颤抖，但内心燃起求知的烈焰。作为一名新晋的魔法学徒，你在1-10级的旅途中迈出第一步，星辉般的魔法在你指尖跳跃。未来的道路上，古老的魔法书与未知的奥秘正等待着你去揭开，勇敢前行吧！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Apprentice Mage",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_apprentice_mage_mid",
+    "text": "你从学生蜕变为魔法学徒，早已在奥术协会的殿堂中磨砺心智。11-50级的征途见证了你的成长，魔法的丝线在你手中编织出绚烂的光芒。你已不再是初学者，而是经验丰富的学徒，元素的力量逐渐向你低头。前方，更加深奥的法术等待你的掌握，继续追寻那无尽的真理吧！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Apprentice Mage",
+      "value": 0.07,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_apprentice_mage_high",
+    "text": "你从学生到学徒，一路走来，奥术协会的圣火为你指引方向。在51-100级的征程中，你已精通学徒之道，魔法的洪流在你掌中奔涌，星辰之力为你所用。你的成长令人惊叹，但这只是起点。更伟大的奥秘在召唤你，迈向真正的法师之路吧，未来的传奇将由你书写！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Apprentice Mage",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_mage_low",
+    "text": "你曾是学生与学徒，如今成为一名真正的法师，魔力与时间的奥秘在你心中绽放。1-10级的法师之路刚刚开启，魔杖挥舞间，元素为你歌唱。你将毕生奉献于奥术的探索，每一步都靠近真理的边缘。前方，未知的魔法领域等待着你的征服，勇敢地迈出下一步吧！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Mage",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_mage_mid",
+    "text": "你从学徒晋升为法师，魔力与时间的秘密逐渐为你揭开。在11-50级的旅途中，你已积累丰富经验，魔法之光在你手中化作利刃，元素之力随你心意而动。你是奥术的践行者，但道路尚未结束。更深邃的魔法在远方召唤，继续前行，书写属于你的辉煌篇章！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Mage",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_mage_high",
+    "text": "你从学生到法师，一路披荆斩棘，魔力与时间的奥秘已在你掌中。51-100级的征程中，你已掌握法师之道，星辉与雷霆为你臣服，魔法之歌响彻天地。你的力量令人敬畏，但更高的境界在等待。迈向巫师的殿堂吧，未来的传说将在你的手中诞生！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Mage",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_wizard_low",
+    "text": "你从学生到法师，如今成为巫师，魔法知识的极限在你手中被不断突破。1-10级的巫师之路刚刚启程，元素与时空在你意志下屈服，你的才华如星辰般耀眼。你是奥术的天才，但主席之位仍在远方。继续探索未知的领域吧，属于你的传奇才刚刚开始！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Wizard",
+      "value": 0.06,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_wizard_mid",
+    "text": "你历经学生、学徒、法师的磨砺，成为经验丰富的巫师。11-50级的征途见证了你的成长，魔法之潮在你手中翻涌，古老的禁咒为你所用。你是奥术的先驱，但更高的巅峰在呼唤。迈向更伟大的目标吧，主席的荣光已在你视线之内，勇往直前！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Wizard",
+      "value": 0.09,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_wizard_high",
+    "text": "你从学生到巫师，魔法知识的边界因你而拓展。在51-100级的征程中，你已精通巫师之道，星河与虚空在你法术下颤抖，世人传颂你的名字。你的成就无与伦比，但主席之位仍在召唤。迈向至高无上的境界吧，永恒的奥秘等待你的揭晓！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Wizard",
+      "value": 0.12,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_master_wizard_low",
+    "text": "你从学生到巫师，如今成为大师巫师，魔法之巅在你脚下显现。1-10级的大师之路刚刚开启，禁忌的奥术在你手中复苏，天地之力为你所控。你是奥术的化身，但主席的宝座尚未触及。继续探索那无尽的真理吧，属于你的时代即将到来！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Master Wizard",
+      "value": 0.07,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_master_wizard_mid",
+    "text": "你历经无数磨砺，成为经验丰富的大师巫师。11-50级的征程中，魔法之源在你掌中流转，时空的法则为你改写。你的智慧如深渊般无垠，但更高的荣光仍在远方。迈向主席之位吧，奥术的终极奥秘正等待着你去征服，勇者无畏！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Master Wizard",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_master_wizard_high",
+    "text": "你从学生到大师巫师，魔法之巅已被你征服。在51-100级的旅途中，你已精通一切奥术，星辰与命运在你法术下低头，世人将你的名字刻入传说。你的辉煌无与伦比，但主席之位仍在召唤。迈向最终的殿堂吧，永恒的荣光将为你而燃！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Master Wizard",
+      "value": 0.13,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_chairman_low",
+    "text": "你从学生到大师巫师，如今登上主席之位，奥术的至高荣光为你加冕。1-10级的主席之路刚刚开启，魔法之源在你手中涌动，天地万物为你俯首。你是奥术的统治者，但更大的挑战仍在前方。继续守护真理吧，属于你的不朽传说才刚刚启幕！",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Chairman",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_chairman_mid",
+    "text": "你历经无数试炼，成为经验丰富的奥术主席。11-50级的征程中，魔法之光照耀你的道路，时空与命运在你掌中交织。你的权威无人能及，但奥术的边界仍需拓展。继续引领协会吧，未知的领域等待你的征服，传奇将永不落幕！",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Chairman",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_chairman_high",
+    "text": "你从学生到奥术主席，魔法之巅已被你彻底征服。在51-100级的征途中，你已精通一切真理，星河与永恒在你意志下臣服，世人将你奉为不朽之神。你的成就超越想象，但更伟大的使命在召唤。继续书写传说吧，奥术的未来将因你而永恒！",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Chairman",
+      "value": 0.15,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "rebirth_1",
+    "text": "你曾行走于尘世，历经风雨，记忆如古老卷轴般铭刻于灵魂深处。曾经的笑与泪，成败与荣辱，皆是你前世旅程的勋章。如今，你重生于新的躯壳，带着过往的智慧与遗憾，重新踏上征途。你的目光坚定，似要穿透命运的迷雾，书写更为辉煌的篇章。未来的道路虽未知，但你已非昨日之身，新的传奇将在你手中绽放光芒。继续前行吧，命运的编织者，属于你的史诗尚未完结！",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "rebirth_2",
+    "text": "你自时间的长河中归来，带着岁月的智慧，重生于这片熟悉又陌生的土地。你的眼神中多了一分沉稳，似已洞悉生命的真谛。前世的迷茫与彷徨已被洗净，此刻的你，胸中燃起熊熊烈焰，誓要以新的生命实现未尽的宏愿。你迈出的每一步皆带着目的，每一次呼吸皆是为了更伟大的目标。命运之轮再次转动，你将以何种姿态刻画新的传说？勇往直前吧，新的辉煌在彼岸等候！",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "rebirth_3",
+    "text": "你曾堕入黑暗的深渊，邪恶之手染黑了前世的灵魂。如今重生，黑暗之力仍在你的血脉中低语，化作一股无形的力量驱使着你前行。你并非无知之辈，而是选择拥抱这股阴冷，欲以它为刃，切割命运的枷锁。过去的罪孽是你最沉重的盔甲，也是最锋利的武器。你将如何驾驭这黑暗，书写救赎或毁灭的篇章？继续前行吧，黑暗的继承者，光明与阴影的交锋将在你手中展开！",
+    "effect": {
+      "type": "income_bonus",
+      "target": "",
+      "value": 0.12,
+      "duration": "permanent"
+    }
+  }
+]

@@ -35,12 +35,12 @@ app.post('/api/chat', async (req, res) => {
     };
 
     const selectedProvider = providers[provider] || providers.xai;
-    // BYOK: prefer user-supplied key, fall back to server-side env key
-    const apiKey = ownApiKey || selectedProvider.key;
+    // BYOK only — never use server-side env keys
+    const apiKey = ownApiKey;
 
     if (!apiKey) {
-        return res.status(500).json({
-            error: `API key not configured for provider: ${provider || 'xai'}. Set the corresponding env variable in .env or use your own key.`
+        return res.status(401).json({
+            error: 'No API key provided. Please enter your own API key in the settings (BYOK).'
         });
     }
 
@@ -73,24 +73,13 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-// Get available providers (without exposing keys)
+// Get available providers
 app.get('/api/providers', (req, res) => {
-    const available = [];
-    if (process.env.XAI_API_KEY) available.push({ id: 'xai', name: 'xAI (Grok)', defaultModel: 'grok-3' });
-    if (process.env.OPENAI_API_KEY) available.push({ id: 'openai', name: 'OpenAI', defaultModel: 'gpt-4o-mini' });
-    if (process.env.DEEPSEEK_API_KEY) available.push({ id: 'deepseek', name: 'DeepSeek', defaultModel: 'deepseek-chat' });
-    res.json({ providers: available });
-});
-
-// Local dev only: expose env API key so the browser can call the LLM directly
-app.get('/api/config', (req, res) => {
-    const keys = {};
-    if (process.env.XAI_API_KEY) keys.xai = process.env.XAI_API_KEY;
-    if (process.env.OPENAI_API_KEY) keys.openai = process.env.OPENAI_API_KEY;
-    if (process.env.DEEPSEEK_API_KEY) keys.deepseek = process.env.DEEPSEEK_API_KEY;
-    // Pick the first available provider+key
-    const provider = Object.keys(keys)[0] || null;
-    res.json({ provider: provider, apiKey: keys[provider] || null, keys: keys });
+    res.json({ providers: [
+        { id: 'xai',      name: 'xAI (Grok)', defaultModel: 'grok-3' },
+        { id: 'openai',   name: 'OpenAI',     defaultModel: 'gpt-4o-mini' },
+        { id: 'deepseek', name: 'DeepSeek',   defaultModel: 'deepseek-chat' }
+    ]});
 });
 
 app.listen(PORT, () => {

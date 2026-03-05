@@ -1,0 +1,632 @@
+[
+  {
+    "key": "common_beggar_low",
+    "text": "You began as a shadow in the streets, born into poverty with naught but the fire of determination in your heart. Each day, you’ve clawed for scraps, your hands trembling yet resolute. Now, as you stand at the dawn of your journey, you feel a spark of hope ignite within. The alleys whisper of your stubborn will, a beggar who refuses to break. With every coin earned, you carve a path from despair. Yet, greater trials loom—will you rise above the dust of your origins to claim a brighter fate?",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Beggar",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_beggar_mid",
+    "text": "You’ve walked the cobblestones of want for years, a beggar forged in the crucible of hunger. From those first desperate pleas, you’ve grown cunning, your voice now carrying the weight of experience. The streets know your name, and your outstretched hand gathers more than pity—it gathers strength. Each day, you’ve built a resilience no hardship can shatter. Yet, as you stand amidst the clamor of the market, you sense a turning tide. What destiny awaits beyond these familiar shadows, where ambition might lift you from the mire?",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Beggar",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_beggar_high",
+    "text": "You are no mere beggar now, but a master of survival, honed by decades of struggle in the unforgiving streets. Born into nothingness, your determination has transformed you into a legend among the downtrodden. Every coin, every scrap, is a trophy of your unyielding spirit. The city itself seems to bow to your perseverance, as if recognizing a hidden king. Yet, even as you stand atop this hard-won peak, a restless yearning stirs. What lies beyond the horizon of poverty—could true power be within your grasp?",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Beggar",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_farmer_low",
+    "text": "You remember the days of begging, hands empty and heart heavy, before the earth called to you. Now, as a fledgling farmer, you’ve traded the streets for fields, your fingers learning the language of soil. Each seed sown is a defiance of your past, a promise of growth. Your back aches, yet your spirit soars with the dawn’s first light. You’ve only just begun to till this new life, but the harvest of your labor whispers of abundance. What greater yields lie ahead, if you dare to nurture your dreams?",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Farmer",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_farmer_mid",
+    "text": "You’ve come far from the beggar’s plight, your hands once empty now stained with the earth of your fields. As an experienced farmer, you’ve tamed the wild land, coaxing life from stubborn soil. The seasons have taught you patience, each harvest a testament to your grit. From poverty to plow, you’ve built a quiet strength, a rhythm of toil and triumph. Yet, as the sun sets over golden crops, you feel a pull toward broader horizons. What new challenges await, beyond the boundaries of this fertile domain?",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Farmer",
+      "value": 0.07,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_farmer_high",
+    "text": "You stand as a master of the earth, a farmer whose journey began in the dust of begging. From those hollow days, you’ve risen to command the fields, each harvest a monument to your unbreakable will. The land bends to your wisdom, yielding bounty beyond imagination. Your past of want is but a distant echo, drowned by the rustle of thriving crops. Yet, even as you revel in mastery, a whisper of ambition stirs. Could greater realms of power await, beyond this verdant kingdom you’ve forged?",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Farmer",
+      "value": 0.12,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_fisherman_low",
+    "text": "You’ve journeyed from beggar to farmer, and now, as a novice fisherman, you cast your line into uncharted waters. The streets and fields of yesteryear shaped your resolve; now the sea tests it. Each wave crashing against your boat echoes your past struggles, yet you stand firm, net in hand. Your first catches are small, but they gleam with promise. The ocean’s vastness mirrors the potential within you. What mysteries lie beneath the surface, waiting for your hook to claim them as your own?",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Fisherman",
+      "value": 0.06,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_fisherman_mid",
+    "text": "You’ve sailed far from the beggar’s alleys and farmer’s fields, now an experienced fisherman battling the sea’s whims. Each haul from the deep is a victory over your humble origins, a testament to hands hardened by toil. The tides have taught you cunning, the storms resilience. Your boat, once a fragile dream, now braves the wild waves with confidence. Yet, as you gaze at the endless horizon, a thirst for greater conquests rises. What treasures lie in deeper waters, awaiting your seasoned skill?",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Fisherman",
+      "value": 0.09,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_fisherman_high",
+    "text": "You are a master of the seas, a fisherman whose saga began in the dust of begging and the sweat of farming. From those trials, you’ve forged a legacy, your nets brimming with the ocean’s bounty. The waves themselves seem to honor your name, yielding to your unmatched prowess. Your past of toil is but a memory, overshadowed by the roar of your triumphs. Yet, even as you reign over these waters, a distant call beckons. What greater depths or lands await your indomitable spirit?",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Fisherman",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_miner_low",
+    "text": "You’ve toiled as beggar, farmer, and fisherman, each step etching resilience into your bones. Now, as a novice miner, you descend into the earth’s embrace, pickaxe in hand. The darkness of the mines mirrors your early struggles, yet you strike with newfound purpose. Each shard of ore is a spark of hope, a testament to your journey from nothing to now. Your arms tremble, but your will is iron. What ancient riches lie buried deeper, waiting for your fledgling strength to unearth them?",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Miner",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_miner_mid",
+    "text": "You’ve climbed from beggar to farmer, fisherman to miner, each trade a rung on your ladder of grit. Now, as an experienced miner, you delve deeper into the earth’s heart, your strikes echoing with purpose. The caverns remember your past toil, rewarding you with glints of treasure. Your hands, once empty, now wield the power to shatter stone. Yet, as veins of ore gleam in the dark, you sense untapped wonders below. What forgotten wealth awaits, if you dare to dig beyond the known?",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Miner",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_miner_high",
+    "text": "You stand as a master miner, your legacy carved from the beggar’s streets through fields and seas to these cavernous depths. Every swing of your pickaxe is a defiance of your past, unearthing riches that rival the sun. The earth itself bows to your mastery, revealing secrets long buried. From humble origins, you’ve become a titan of stone and ore. Yet, even as you claim this underground empire, a whisper of greater glory stirs. What lies in the deepest chasms, beyond even your seasoned reach?",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Miner",
+      "value": 0.11,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_blacksmith_low",
+    "text": "You’ve forged your path from beggar to farmer, fisherman to miner, and now, as a novice blacksmith, you stand before the anvil. Each past trade fueled your fire, and now the hammer feels like destiny in your grip. The forge’s heat mirrors your burning will, each clumsy strike a step beyond your origins. Sparks fly as you shape raw iron, a symbol of your own transformation. What mighty works will your hands create, as you temper both steel and spirit in this new craft?",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Blacksmith",
+      "value": 0.06,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_blacksmith_mid",
+    "text": "You’ve risen through beggar’s woes, farmer’s sweat, fisherman’s tides, and miner’s depths to become an experienced blacksmith. The forge roars with your past struggles, each hammer blow a chorus of triumph. Iron bends to your will, just as fate has bent to your resolve. From empty hands to crafting blades, you’ve built a name in fire and steel. Yet, as your creations gleam with skill, a vision of legendary craftsmanship beckons. What masterpieces await, if you stoke the flames of your ambition higher?",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Blacksmith",
+      "value": 0.09,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_blacksmith_high",
+    "text": "You are a master blacksmith, your saga forged from the ashes of begging through fields, seas, and mines to this blazing zenith. Each weapon and tool bearing your mark sings of a journey from nothing to greatness. The forge is your kingdom, fire your crown, as you shape steel with godlike precision. Your past hardships fuel every strike, crafting a legacy none can rival. Yet, even as you stand supreme, whispers of mythic alloys and ancient arts call. What ultimate creation lies ahead, beyond mortal metal?",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Blacksmith",
+      "value": 0.13,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_merchant_low",
+    "text": "You stand at the dawn of a new venture, a fledgling Merchant with hands once rough from tilling fields and hauling nets as a Beggar, Farmer, and more. From the humblest trades, you’ve woven a dream of commerce, bartering with a spark of ambition in your heart. Now, as you set up your modest stall, the clink of coin heralds your first successes. Each deal struck is a step beyond your past struggles, a testament to your unyielding spirit. The marketplace buzzes with opportunity, and your keen eye spots untapped potential. What grand trades await on the horizon, promising wealth beyond your wildest dreams?",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Merchant",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_merchant_mid",
+    "text": "You, an experienced Merchant, have journeyed far from the days of begging and toiling as a Farmer or Miner. Through sweat and savvy, you’ve turned humble goods into a thriving trade, your name whispered with respect among market stalls. Now, your coffers grow with each shrewd bargain, a reflection of lessons learned in every past hardship. Your stall is a beacon for travelers, and your reputation as a fair dealer blossoms. Yet, the road of commerce stretches further still, with distant lands and exotic wares calling your name. What alliances and treasures lie ahead, ready to elevate your craft to legendary heights?",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Merchant",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "common_merchant_high",
+    "text": "You, a mastered Merchant, have forged an empire of trade from the ashes of your past as Beggar and Blacksmith. Every coin in your vault tells a story of grit, from fishing docks to mining pits, shaping you into a titan of commerce. Now, your caravans span kingdoms, and your name is synonymous with wealth and trust. The markets bow to your wisdom, each deal a masterpiece of strategy. Yet, even as you revel in this triumph, whispers of ancient trade routes and forbidden riches stir your soul. What final frontier awaits, where your legacy might echo through the ages?",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Merchant",
+      "value": 0.12,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_squire_low",
+    "text": "You, a novice Squire, have turned your back on the common path to grasp the hilt of destiny. Leaving behind the mundane, you’ve pledged yourself to the art of war, your heart aflame with dreams of glory. Now, as you polish armor and train under the sun’s harsh gaze, each swing of the practice blade carves your resolve. This is but the first step, a test of your unproven mettle. The clash of steel and the roar of battlefields beckon from afar. What trials must you endure to prove your worth and rise among the ranks of legends?",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Squire",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_squire_mid",
+    "text": "You, an experienced Squire, have forsaken the commonfolk’s quiet life for the tumultuous path of valor. Through countless drills and sleepless nights, you’ve honed your body and spirit, earning the watchful eyes of your mentors. Now, your blade swings with precision, and your armor bears the first scars of sparring. Each lesson learned is a brick in the foundation of your warrior’s soul. The distant drums of war grow louder, promising tests of true courage. What challenges lie beyond the training grounds, where honor and glory await your steadfast heart?",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Squire",
+      "value": "0.08",
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_squire_high",
+    "text": "You, a mastered Squire, have spurned the mundane to chase the immortal call of battle. Years of relentless training have sculpted you into a warrior on the cusp of greatness, your name murmured with respect among your peers. Now, your blade is an extension of your will, and your shield a bastion against doubt. The path of war has forged you, but this is merely the prelude. Far-off banners flutter, heralding campaigns that will test your mastery. What epic feats must you achieve to don the mantle of true knighthood?",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Squire",
+      "value": 0.12,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_footman_low",
+    "text": "You, a fledgling Footman, have risen from the ranks of Squire, answering the clarion call of war. Your past training has steeled your limbs, and now you march under a banner of duty, shield in hand. Each step on the battlefield is a testament to your choice to embrace conflict over comfort. The clash of steel rings as your first true test, a chance to prove your grit. Victory feels within reach, yet greater foes loom on the horizon. What scars and stories will you earn as you carve your path through the chaos of war?",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Footman",
+      "value": 0.05,
+      "duration": "life"
+    }
+  },
+  {
+    "key": "military_footman_mid",
+    "text": "You, an experienced Footman, have walked the path from Squire to soldier, your resolve tempered by the fires of early battles. Each skirmish survived has taught you the weight of brotherhood and the sting of loss. Now, your shield bears dents of valor, and your comrades rely on your steady hand. The battlefield is your crucible, forging you into something greater with every clash. Yet, whispers of larger wars echo through the ranks, stirring your blood. What mighty enemies await, ready to challenge your growing legend on the fields of strife?",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Footman",
+      "value": 0.08,
+      "duration": "life"
+    }
+  },
+  {
+    "key": "military_footman_high",
+    "text": "You, a mastered Footman, have ascended from Squire through the crucible of combat, your name a quiet chant among the ranks. Battle after battle has honed your skill, your blade a whirlwind of precision born from relentless dedication. Now, you stand as a pillar on the battlefield, inspiring those who falter. The scars you bear are badges of honor, proof of your unyielding spirit. Yet, even as you revel in mastery, the shadow of greater campaigns looms. What epic confrontations will test the limits of your strength and etch your name in history?",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Footman",
+      "value": 0.12,
+      "duration": "life"
+    }
+  },
+  {
+    "key": "military_veteran_footman_low",
+    "text": "You, a newly anointed Veteran Footman, have climbed through the ranks of Squire and Footman, your journey marked by blood and sacrifice. Each battle has left its mark, shaping you into a seasoned warrior whose gaze unnerves the green. Now, as you don the insignia of veterancy, your presence steadies the line, a beacon amid chaos. The weight of past losses fuels your resolve to protect and prevail. Yet, distant horns signal wars yet unfought. What trials of endurance and valor must you face to ascend even higher in the annals of war?",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Veteran Footman",
+      "value": 0.06,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_veteran_footman_mid",
+    "text": "You, an experienced Veteran Footman, have forged your legacy through the trials of Squire and Footman, tempered by discipline and the crimson of battle. Your scars tell tales of survival, each a lesson etched in flesh. Now, your commands echo with authority, rallying troops where hope wanes. The battlefield is your home, and your seasoned tactics turn the tide of skirmishes. Yet, the horizon darkens with the promise of greater conflicts. What formidable adversaries await, daring to test the mettle of a warrior whose spirit refuses to break?",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Veteran Footman",
+      "value": 0.09,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_veteran_footman_high",
+    "text": "You, a mastered Veteran Footman, stand as a monument to perseverance, having risen through Squire and Footman with unyielding sacrifice. Your blade has felled countless foes, your shield a bulwark against despair. Now, your very name inspires awe, a legend whispered by fireside as battles rage on. Each victory is a stepping stone, built upon the foundation of past struggles. Yet, even as mastery crowns you, the drums of destiny pound louder still. What ultimate test of courage and skill awaits to immortalize your saga in the chronicles of war?",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Veteran Footman",
+      "value": 0.13,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_knight_low",
+    "text": "You, a nascent Knight, have battled through the ranks of Squire, Footman, and Veteran Footman, your path strewn with the debris of countless campaigns. Now, clad in shining armor, you ride forth as a symbol of valor, your oath to protect burning bright. Each tournament and skirmish is a chance to prove your newfound title, a nod to the blood spilled for this honor. The realm watches, eager for your deeds. Yet, whispers of dark forces stir in forgotten lands. What legendary quests must you undertake to cement your place among the eternal heroes?",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Knight",
+      "value": 0.07,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_knight_mid",
+    "text": "You, an experienced Knight, bear the weight of a storied past as Squire, Footman, and Veteran Footman, your armor etched with the history of brutal campaigns. Now, your lance strikes true in defense of the realm, your name sung by bards in castle halls. Each victory adds to your growing renown, a tribute to the endless grind of war. The people look to you as a guardian of light. Yet, ancient evils murmur from shadowed vales, hungry for a champion’s challenge. What mythic battles will you face to forge an unbreakable legacy?",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Knight",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_knight_high",
+    "text": "You, a mastered Knight, stand as a colossus of valor, your journey from Squire through Veteran Footman a tapestry of relentless struggle and triumph. Now, your banner flies high, a symbol of hope across war-torn lands, your blade a harbinger of justice. Each quest completed is a chapter in an epic saga, born from the fires of past conflicts. The realm kneels in awe of your mastery. Yet, from the mists of prophecy, a final, cataclysmic challenge emerges. What titanic clash awaits to enshrine your name as the greatest knight of all time?",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Knight",
+      "value": 0.15,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_veteran_knight_low",
+    "text": "You stand as a Veteran Knight, your armor scarred from battles as a Squire and Footman. Each clash of steel against steel has forged your resolve through the ranks. Now, just starting this esteemed role, your blade gleams with the promise of valor. You’ve endured countless campaigns, your heart a fortress of grit and glory. Today, you celebrate the strength earned through sweat and sacrifice, a warrior tempered by fire. Yet, whispers of legendary feats beckon—greater trials await on the horizon. Will your name echo through the ages? Your journey is only beginning.",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Veteran Knight",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_veteran_knight_mid",
+    "text": "You, Veteran Knight, have carved your path through the ranks of Squire, Footman, and Knight. With experience as your shield, countless campaigns have honed your skill, each scar a story of survival. Now, seasoned in this rank, you wield your sword with unmatched precision, a beacon of hope on bloodied fields. Reflecting on past victories, you stand taller, your spirit unyielding. The clang of battle still calls, promising epic challenges ahead. Will you rise to meet the legends of old? Your saga grows with every dawn.",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Veteran Knight",
+      "value": 0.07,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_veteran_knight_high",
+    "text": "You, Veteran Knight, have mastered your craft through the trials of Squire, Footman, and Knight. Countless campaigns have shaped you into a paragon of war, your name whispered in awe. At the pinnacle of this rank, your blade dances with deadly grace, a testament to years of unbreaking will. Looking back, every wound was a lesson, every victory a step toward greatness. Yet, the path to legend stretches beyond the horizon. Greater glories await—will you claim them? Your legacy is but a heartbeat away.",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Veteran Knight",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_elite_knight_low",
+    "text": "You ascend as an Elite Knight, your journey from Squire to Veteran Knight a tapestry of valor. Each battle fought has led to this moment, where you’ve just begun to wield unparalleled might. Countless campaigns have steeled your soul, your armor a chronicle of honor. Today, you stand at the threshold of greatness, celebrating the power coursing through your veins. But whispers of ancient evils stir—challenges beyond mortal ken loom ahead. Will you forge a name undying? Your epic has only just unfurled.",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Elite Knight",
+      "value": 0.06,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_elite_knight_mid",
+    "text": "You, Elite Knight, have trodden a path of blood and glory from Squire to Veteran Knight. With experience as your guide, countless campaigns have molded you into a force of nature. Now, seasoned in this exalted rank, your presence alone turns the tide of battle. Reflecting on past triumphs, your heart swells with pride for every foe felled. Yet, the call of destiny rings louder—unseen perils await to test your mettle. Will you rise as a myth? Your legend sharpens with every clash.",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Elite Knight",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_elite_knight_high",
+    "text": "You, Elite Knight, have mastered the art of war, rising through Squire to Veteran Knight. Countless campaigns have crowned you a colossus of the battlefield, your name a rallying cry. At the zenith of this rank, your blade is a storm, unmatched and unrelenting. Looking back, each scar is a badge of honor, each victory a monument to your will. Yet, the shadow of greater quests falls upon you—will you conquer the impossible? Your path to immortality beckons.",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Elite Knight",
+      "value": 0.12,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_holy_knight_low",
+    "text": "You rise as a Holy Knight, your ascent from Squire to Elite Knight blessed by divine purpose. Just starting this sacred role, your blade shines with celestial light, forged in countless campaigns. Every battle has been a prayer, every wound a sacrifice for the greater good. Today, you rejoice in the holy strength bestowed upon you, a guardian of the realm. Yet, a greater crusade looms—dark forces gather beyond the veil. Will you wield the heavens’ wrath? Your divine mission begins.",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Holy Knight",
+      "value": 0.07,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_holy_knight_mid",
+    "text": "You, Holy Knight, bear the mantle of divinity, your path from Squire to Elite Knight paved with righteous fury. Experienced in this sacred rank, countless campaigns have sanctified your blade with holy fire. Each victory over darkness has deepened your faith, a beacon in a shadowed world. Reflecting on your journey, you feel the gods’ favor, your spirit alight with purpose. Yet, an ancient evil stirs—will you stand as heaven’s champion? Greater battles of light and dark await your sacred oath.",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Holy Knight",
+      "value": 0.09,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_holy_knight_high",
+    "text": "You, Holy Knight, have mastered the divine path from Squire to Elite Knight, a vessel of celestial might. At the peak of this rank, countless campaigns have made you a living relic, your blade a conduit of the gods. Reflecting on your sacred journey, every trial was a testament to your faith, every triumph a hymn of glory. Yet, the ultimate test looms—an abyss of darkness threatens all you hold dear. Will you ascend as a saint of war? Your final crusade dawns.",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Holy Knight",
+      "value": 0.13,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_legendary_knight_low",
+    "text": "You stand as a Legendary Knight, your odyssey from Squire to Holy Knight the stuff of epic lore. Just beginning this mythic rank, your presence shakes the earth, forged in countless campaigns. Every battle has carved your name into history, a warrior beyond mortal bounds. Today, you revel in the awe you inspire, a living legend among men. Yet, whispers of immortal foes echo—can even you defy the undying? Your tale of eternity is only starting.",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Legendary Knight",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_legendary_knight_mid",
+    "text": "You, Legendary Knight, have walked a path of myth from Squire to Holy Knight, your deeds sung by bards. Experienced in this fabled rank, countless campaigns have made you a titan of war. Each swing of your blade weaves a new chapter of legend, your name eternal in the annals of time. Reflecting on your saga, your heart burns with pride. Yet, a cataclysmic foe stirs—will your might sunder the impossible? Your greatest epic lies ahead.",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Legendary Knight",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "military_legendary_knight_high",
+    "text": "You, Legendary Knight, have mastered a journey from Squire to Holy Knight, a myth made flesh. At the apex of this rank, countless campaigns have crowned you a god among warriors, your blade a force of destiny. Looking back, every battle was a stepping stone to immortality, every scar a mark of eternity. Yet, the ultimate challenge looms—a threat to shatter worlds. Will you transcend even legend? Your final, boundless chapter awaits.",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Legendary Knight",
+      "value": 0.15,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_student_low",
+    "text": "You emerge as a Student of the arcane, your path born from years of quiet meditation. Just starting this mystic journey, the spark of magic flickers within you, a gift unearthed from deep contemplation. Though your past holds no titles, your spirit has always yearned for the unseen. Today, you celebrate the first whispers of power, a mind awakening to ancient secrets. Yet, vast tomes and hidden spells call from the shadows—will you unlock their mysteries? Your magical odyssey has just begun.",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Student",
+      "value": 0.02,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_student_mid",
+    "text": "You, Student of the arcane, have nurtured your gift through years of meditation, now seasoned in the craft. With experience, the threads of magic weave stronger in your grasp, each incantation a step beyond the mundane. Though your journey lacks prior titles, your soul has long communed with the unseen. Reflecting on early lessons, you glow with pride at your growing power. Yet, deeper enigmas of the ether beckon—will you decipher their cryptic truths? Your arcane path stretches ever onward.",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Student",
+      "value": 0.03,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_student_high",
+    "text": "You, Student of the arcane, have mastered the foundations of magic, your mind a crucible of mystic potential. Born from years of meditation, your journey holds no prior rank, yet your spirit has always danced with the unseen. At the peak of this role, your spells shimmer with promise, a testament to relentless study. Looking back, each revelation was a triumph over doubt. Yet, the grandest arcane secrets still elude you—will you grasp the infinite? Your destiny as a mage looms near.",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Student",
+      "value": 0.04,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_apprentice_mage_low",
+    "text": "You stand at the threshold of magic, a fledgling Apprentice Mage in the hallowed halls of the Arcane Association. Once a mere Student, you’ve forsaken mundane toils for the shimmering promise of mana. Your journey has just begun, yet already the air hums with latent power as you trace your first runes. Each incantation is a step beyond the ordinary, a testament to your resolve. The mysteries of the arcane beckon, and your spirit soars with newfound purpose. As you delve into ancient tomes, whispers of greater spells linger on the horizon, daring you to grasp them.",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Apprentice Mage",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_apprentice_mage_mid",
+    "text": "You, an experienced Apprentice Mage, have walked further along the arcane path. From the days of a curious Student, you’ve risen through countless hours of study within the Arcane Association. Your spells now weave with precision, threads of mana bending to your will. Reflecting on sleepless nights poring over scrolls, you see how far you’ve come—your chants echo with growing strength. Each success fuels your ambition, a beacon in the mystic fog. Yet, greater enchantments shimmer just out of reach, promising deeper secrets if you dare to seek them.",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Apprentice Mage",
+      "value": 0.03,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_apprentice_mage_high",
+    "text": "You have mastered the role of Apprentice Mage, a shining star in the Arcane Association. Once a humble Student, you’ve transformed through relentless dedication, your mastery over basic spells now undeniable. The arcane currents flow through you like rivers of light, each incantation a masterpiece. Looking back, you marvel at the journey from novice to near-adept, your spirit tempered by every challenge. Now, as you stand on this peak, the tantalizing glow of true magecraft calls from beyond, urging you to ascend even higher into the mystic unknown.",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Apprentice Mage",
+      "value": 0.07,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_mage_low",
+    "text": "You embark as a Mage, a new chapter in your arcane odyssey. From Student to Apprentice Mage, your life has been a relentless pursuit of mana’s mysteries. Now, stepping into this revered role, you feel the weight of ancient power in your hands. Your first spells as a Mage crackle with potential, a testament to years of toil. Reflecting on your past struggles, you stand taller, ready to weave time itself. Yet, the horizon shimmers with untamed forces, whispering of greater mastery if you persist in your quest.",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Mage",
+      "value": 0.04,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_mage_mid",
+    "text": "You, an experienced Mage, have delved deeper into the arcane arts. Your path from Student through Apprentice Mage has forged a mind sharp as a spell’s edge. Each incantation now bends reality, a dance of mana and will born from tireless study. Looking back, you see the trials that shaped you, each failure a stepping stone to this moment of power. Your growth is a beacon, illuminating the mystic realms. Still, beyond your current grasp, ancient secrets pulse, calling you to unravel their enigma in the chapters ahead.",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Mage",
+      "value": "0.06",
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_mage_high",
+    "text": "You have mastered the mantle of Mage, a titan among spellweavers. From humble Student to skilled Apprentice Mage, your journey has been one of relentless pursuit, unraveling the mysteries of mana and time. Your spells now thunder with authority, reshaping the very fabric of existence. Reflecting on your path, you stand in awe of your own transformation, a vessel of arcane might. Yet, even as you revel in mastery, the distant call of wizardry hums—a promise of boundless power awaiting your next daring step.",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Mage",
+      "value": 0.08,
+      "duration": "life"
+    }
+  },
+  {
+    "key": "arcane_wizard_low",
+    "text": "You ascend as a Wizard, a prodigy of the arcane. From Student to Apprentice Mage, then Mage, your life has been a tapestry of mystic triumphs. Now, stepping into this legendary role, you feel the pulse of raw magic in your veins. Your first wizardly spells shimmer with untamed energy, a herald of your potential. Reflecting on past struggles, you stand renewed, a guardian of ancient lore. Yet, whispers of chairmanship echo in the ether, daring you to push the boundaries of magic itself in the trials ahead.",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Wizard",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_wizard_mid",
+    "text": "You, an experienced Wizard, wield magic with breathtaking finesse. Your journey from Student through Apprentice Mage and Mage has carved a legacy of arcane brilliance. Each spell now ripples through the world, a symphony of power born from years of dedication. Looking back, you see the crucible of challenges that forged your spirit, each victory a spark of divine inspiration. Your growth shines like a star in the mystic night. Yet, the path to chairmanship looms, a celestial challenge beckoning you to claim ultimate mastery over the arcane.",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Wizard",
+      "value": 0.07,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_wizard_high",
+    "text": "You have mastered the title of Wizard, a paragon of magical might. From the first days as a Student, through Apprentice Mage and Mage, your saga has been one of relentless ambition. Your spells now weave destinies, bending time and space with a mere thought. Reflecting on your epic rise, you stand as a pillar of arcane lore, your name whispered in awe. Yet, even at this zenith, the shadow of chairmanship calls—a final frontier of power promising to test the very limits of your soul.",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Wizard",
+      "value": 0.09,
+      "duration": "life"
+    }
+  },
+  {
+    "key": "arcane_master_wizard_low",
+    "text": "You emerge as a Master Wizard, a near-mythic force of arcane wonder. From Student to Wizard through countless trials, your path has been a relentless climb toward enlightenment. Now, at the dawn of this exalted role, your magic sings with primordial strength. Each spell is a monument to your past struggles, a beacon of your boundless potential. Reflecting on your journey, you feel the weight of destiny. Yet, the ultimate seat of chairmanship glimmers ahead, a challenge to wield magic beyond mortal comprehension in the days to come.",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Master Wizard",
+      "value": 0.06,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_master_wizard_mid",
+    "text": "You, an experienced Master Wizard, command the arcane with unparalleled skill. From the humble days of a Student to the heights of Wizard, your life has been a saga of mystic conquests. Your spells now reshape reality itself, a testament to decades of unyielding study. Looking back, each trial forged your indomitable will, every triumph a step toward legend. Your power radiates, inspiring awe in all who witness it. Still, the throne of chairmanship awaits, a final test of your mastery over the boundless arcane frontier.",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Master Wizard",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_master_wizard_high",
+    "text": "You have mastered the art of Master Wizard, a living legend of arcane might. From Student to Wizard, your journey has spanned realms of knowledge, each step a victory over the impossible. Your magic now pulses as the heartbeat of the cosmos, rewriting fate with every gesture. Reflecting on your odyssey, you stand as a colossus of mystic power, revered and feared. Yet, even at this apex, the call of chairmanship resounds—a divine summons to transcend mortality itself and claim the ultimate arcane crown.",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "Master Wizard",
+      "value": 0.1,
+      "duration": "life"
+    }
+  },
+  {
+    "key": "arcane_chairman_low",
+    "text": "You ascend as Chairman, the pinnacle of arcane dominion. From Student to Master Wizard, your epic journey has forged a legacy unmatched in the annals of magic. Now, at the dawn of this supreme role, you wield power that humbles the heavens. Your first decrees as Chairman ripple through reality, a culmination of lifelong devotion. Reflecting on your ascent, you stand as a god among mages. Yet, even now, uncharted mystic realms whisper, hinting at cosmic enigmas awaiting your boundless curiosity in the eons ahead.",
+    "effect": {
+      "type": "income_bonus",
+      "target": "Chairman",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_chairman_mid",
+    "text": "You, an experienced Chairman, reign over the arcane with divine authority. Your path from Student to Master Wizard carved a myth through time, each role a stepping stone to this ultimate throne. Your edicts now shape the fabric of magic itself, a testament to unyielding ambition. Reflecting on past trials, you see the mortal shell you’ve transcended, now a beacon for all mages. Your rule is a golden age of mysticism. Still, the infinite expanse of the arcane whispers of untold wonders, daring you to explore beyond the known.",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "Chairman",
+      "value": 0.12,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "arcane_chairman_high",
+    "text": "You have mastered the mantle of Chairman, an eternal sovereign of the arcane. From the first timid steps as a Student to the towering heights of Master Wizard, your odyssey has redefined magic itself. Your will now commands the cosmos, each thought a law unto reality. Reflecting on your mythic rise, you stand as the ultimate arbiter of mystic lore, a name etched in eternity. Yet, even at this divine summit, the endless void of the unknown beckons—a final frontier to shape with your boundless, godlike power.",
+    "effect": {
+      "type": "lifespan_bonus",
+      "target": "Chairman",
+      "value": 0.15,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "rebirth_1",
+    "text": "You stand at the threshold of a new dawn, the echoes of a past life reverberating in your soul. Once, you walked a path now faded into memory, yet every triumph and failure has forged the spirit within you. Reborn, you feel the weight of forgotten dreams lifting, replaced by a boundless vigor. Your eyes gleam with the wisdom of ages, a mind sharpened by lives once lived. This new beginning is a celebration of resilience, a testament to your unyielding will. Yet, as the horizon beckons, whispers of ancient challenges stir in the wind. What trials await in this uncharted life? The journey has only just begun.",
+    "effect": {
+      "type": "xp_multiplier",
+      "target": "",
+      "value": 0.05,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "rebirth_2",
+    "text": "You awaken anew, the weight of years distilled into profound clarity. This second life pulses with purpose, each breath a vow to surpass the shadows of yesteryear. Where once you stumbled through uncertainty, now you stride with the wisdom of age illuminating your path. Your heart burns with renewed ambition, a fire kindled by lessons hard-earned. Today, you stand taller, a soul tempered by time, ready to carve a legend from the raw earth of possibility. But beyond this rebirth, a greater destiny looms—a tapestry of trials and triumphs yet unwoven. What heights will you scale in this fated life?",
+    "effect": {
+      "type": "happiness_boost",
+      "target": "",
+      "value": 0.08,
+      "duration": "permanent"
+    }
+  },
+  {
+    "key": "rebirth_3",
+    "text": "You rise from the ashes of a darkened past, the taint of evil still coursing through your veins. In your last life, you embraced the abyss, and its shadow clings to you even now, a silent strength. Yet, in this rebirth, you wield that darkness as a blade, tempered by the will to redefine your fate. Each step forward is a defiance of the past, a monument to your resolve to forge a different path. Your soul, once cloaked in night, now seeks a fleeting light. But ahead, the whispers of temptation linger—will you conquer the void within, or be consumed once more?",
+    "effect": {
+      "type": "income_bonus",
+      "target": "",
+      "value": 0.1,
+      "duration": "permanent"
+    }
+  }
+]
