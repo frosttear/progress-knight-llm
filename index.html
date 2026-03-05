@@ -11,8 +11,8 @@
 <body id="body" class="dark">
     <div class="w3-margin"> 
         <h1 data-i18n="game_title">Progress Knight</h1>
-        <div style="width: 1220px; height: 600px"> 
-            <div class="panel w3-padding" style="width: 300px; height: auto; float: left">
+        <div class="game-layout"> 
+            <div class="panel w3-padding game-sidebar">
                 <span id="deathText">
                     <div style="font-size: large; color: red" data-i18n="sidebar_death">Age has caught up to you</div>
                     <div class="sidebar-element" style="color: gray" data-i18n="sidebar_death_desc">Your age has met your lifespan, use the amulet to rebirth before you pass away</div>
@@ -115,11 +115,6 @@
                     <div id="skillXpBreakdown" class="xp-breakdown"></div>
                 </div>
 
-                <div id="storyInfo" class="sidebar-element">
-                    <div style="font-size: large"><span style="color: #E5C100" data-i18n="sidebar_story">Story: </span><span id="creditDisplay"></span></div>
-                    <div id="nextMilestoneDisplay" style="color: #b8860b; font-size: small"></div>
-                </div>
-
                 <div style="font-size: large"><span style="color: rgb(15, 105, 207)" data-i18n="sidebar_happiness">Happiness: </span><span id="happinessDisplay"></span></div>
                 <div style="color: gray" class="sidebar-element" data-i18n="sidebar_happiness_desc">Affects all xp gain</div>
 
@@ -147,16 +142,16 @@
                 </span>
             </div>
 
-            <div class="panel w3-margin-left" style="width: 900px; height: 40px; float: left">
+            <div class="panel w3-margin-left game-tab-bar">
                 <div class="w3-button w3-bar-item tabButton" id="jobTabButton" onClick="setTab(this, 'jobs')" data-i18n="tab_jobs">Jobs</div>
                 <div class="w3-button w3-bar-item tabButton" onClick="setTab(this, 'skills')" data-i18n="tab_skills">Skills</div>
                 <div class="w3-button w3-bar-item tabButton" id="shopTabButton" onClick="setTab(this, 'shop')" data-i18n="tab_shop">Shop</div>
                 <div class="w3-button w3-bar-item tabButton" id="rebirthTabButton" onClick="setTab(this, 'rebirth')" data-i18n="tab_amulet">Amulet</div>
                 <div class="w3-button w3-bar-item tabButton" id="storyTabButton" onClick="setTab(this, 'story'); updateStoryLogUI(); updateActiveEffectsUI();" data-i18n="tab_story">Story</div>
-                <div class="w3-button w3-bar-item tabButton" onClick="setTab(this, 'settings')" style="float: right" data-i18n="tab_settings">Settings</div>
+                <div class="w3-button w3-bar-item tabButton" onClick="setTab(this, 'settings')" style="margin-left: auto" data-i18n="tab_settings">Settings</div>
             </div>
 
-            <div class="panel w3-margin-left w3-margin-top w3-padding" style="width: 900px; height: auto; float: left">
+            <div class="panel w3-margin-left w3-margin-top w3-padding game-main">
                 <template class="headerRowTaskTemplate">
                     <tr>
                         <th class="category" style="width: 250px">Job</th>
@@ -350,10 +345,10 @@
 
                             <!-- Option 1: Pre-generated -->
                             <div style="border: 1px solid #ccc; border-radius: 6px; padding: 10px 14px; margin-bottom: 8px; cursor: pointer"
-                                 onclick="document.getElementById('llmUseOwnKey').checked = false; llmConfig.useOwnKey = false; saveLLMConfig(); updateCreditDisplay(); document.getElementById('byokSection').style.display='none';">
+                                 onclick="document.getElementById('llmUseOwnKey').checked = false; llmConfig.useOwnKey = false; saveLLMConfig(); document.getElementById('byokSection').style.display='none';">
                                 <label style="cursor: pointer">
                                     <input type="radio" name="storyMode" id="storyModePregen" value="pregenerated"
-                                           onchange="llmConfig.useOwnKey = false; saveLLMConfig(); updateCreditDisplay(); document.getElementById('byokSection').style.display='none';">
+                                           onchange="llmConfig.useOwnKey = false; saveLLMConfig(); document.getElementById('byokSection').style.display='none';">
                                     <strong data-i18n="settings_story_mode_pregenerated">Pre-generated (no API key needed)</strong>
                                 </label>
                                 <div style="color: gray; font-size: small; margin-top: 4px; margin-left: 20px" data-i18n="settings_story_mode_pregenerated_desc">
@@ -363,10 +358,10 @@
 
                             <!-- Option 2: Real-time BYOK -->
                             <div style="border: 1px solid #ccc; border-radius: 6px; padding: 10px 14px; margin-bottom: 4px; cursor: pointer"
-                                 onclick="document.getElementById('llmUseOwnKey').checked = true; llmConfig.useOwnKey = true; saveLLMConfig(); updateCreditDisplay(); document.getElementById('byokSection').style.display='block';">
+                                 onclick="document.getElementById('llmUseOwnKey').checked = true; llmConfig.useOwnKey = true; saveLLMConfig(); document.getElementById('byokSection').style.display='block';">
                                 <label style="cursor: pointer">
                                     <input type="radio" name="storyMode" id="storyModeByok" value="byok"
-                                           onchange="llmConfig.useOwnKey = true; saveLLMConfig(); updateCreditDisplay(); document.getElementById('byokSection').style.display='block';">
+                                           onchange="llmConfig.useOwnKey = true; saveLLMConfig(); document.getElementById('byokSection').style.display='block';">
                                     <strong data-i18n="settings_story_mode_byok">Real-time AI (BYOK — use your own API key)</strong>
                                 </label>
                                 <div style="color: gray; font-size: small; margin-top: 4px; margin-left: 20px" data-i18n="settings_story_mode_byok_desc">
@@ -388,7 +383,6 @@
                                         <input type="password" id="llmOwnApiKey" data-i18n-placeholder="settings_api_key_placeholder" placeholder="sk-... or xai-..." style="width: 280px; height: 30px" onchange="
                                             llmConfig.ownApiKey = this.value;
                                             saveLLMConfig();
-                                            updateCreditDisplay();
                                         ">
                                     </div>
                                     <div style="color: gray; font-size: small" data-i18n="settings_api_key_storage_note">
@@ -401,7 +395,6 @@
                             <input type="checkbox" id="llmUseOwnKey" style="display:none" onchange="
                                 llmConfig.useOwnKey = this.checked;
                                 saveLLMConfig();
-                                updateCreditDisplay();
                                 document.getElementById('byokSection').style.display = this.checked ? 'block' : 'none';
                                 document.getElementById('storyModeByok').checked = this.checked;
                                 document.getElementById('storyModePregen').checked = !this.checked;
@@ -465,8 +458,6 @@
                 if (byokSec)     byokSec.style.display = 'none';
             }
 
-            updateCreditDisplay();
-            updateMilestoneIndicator();
             applyLanguageToUI();
             updateRebirthDescriptions();
         }, 500);

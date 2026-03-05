@@ -164,6 +164,7 @@ button:focus {
 
 .slider {
     -webkit-appearance: none;
+    appearance: none;
     width: 50%;
     height: 15px;
     border-radius: 5px;
@@ -206,4 +207,138 @@ button:focus {
 
 .small-margin  {
     margin-bottom: 2px;
+}
+
+/* ============================================================
+   Responsive Layout
+   ============================================================ */
+
+.game-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    align-items: flex-start;
+}
+
+.game-sidebar {
+    width: 300px;
+    flex-shrink: 0;
+    height: auto;
+}
+
+.game-tab-bar {
+    margin-left: 8px;
+    width: calc(100% - 316px);
+    height: 40px;
+    overflow-x: auto;
+    white-space: nowrap;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.game-main {
+    margin-left: 8px;
+    margin-top: 8px;
+    width: calc(100% - 316px);
+    height: auto;
+    overflow-x: auto;
+}
+
+/* Sidebar quick-progress bars: fluid width */
+#quickTaskDisplay .progress-bar {
+    width: 100% !important;
+}
+
+/* Main table progress bars: fluid */
+.game-main .progress-bar {
+    width: 100%;
+    min-width: 120px;
+}
+
+/* Tab bar: allow items to shrink/wrap on small screens */
+.game-tab-bar .w3-bar-item {
+    flex-shrink: 1;
+}
+
+/* ---- Tablet (≤900px): sidebar goes full-width on top ---- */
+@media (max-width: 900px) {
+    .game-layout {
+        flex-direction: column;
+    }
+
+    .game-sidebar {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .game-tab-bar,
+    .game-main {
+        width: 100%;
+        margin-left: 0;
+        box-sizing: border-box;
+    }
+
+    .w3-bar-item {
+        width: auto;
+        min-width: 60px;
+        padding: 0 10px;
+        font-size: 0.9em;
+    }
+
+    #quickTaskDisplay .progress-bar {
+        max-width: 100%;
+    }
+}
+
+/* ---- Mobile (≤600px): tighten spacing, shrink fonts ---- */
+@media (max-width: 600px) {
+    .w3-margin {
+        margin: 6px !important;
+    }
+
+    h1 {
+        font-size: 1.4em;
+        margin: 6px 0;
+    }
+
+    .game-tab-bar {
+        height: auto;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .w3-bar-item {
+        min-width: 50px;
+        font-size: 0.8em;
+        padding: 0 8px;
+        height: 36px;
+    }
+
+    .game-main {
+        padding: 8px !important;
+    }
+
+    /* Make tables horizontally scrollable */
+    .game-main table {
+        min-width: 480px;
+    }
+
+    /* Notification width on mobile */
+    #notificationContainer {
+        width: calc(100vw - 20px);
+        right: 5px;
+    }
+
+    /* Settings inputs full-width */
+    #llmOwnApiKey {
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    /* Story modal full-width on mobile */
+    #storyModal {
+        width: 95% !important;
+        padding: 16px;
+    }
 }
