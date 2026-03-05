@@ -328,8 +328,18 @@ button:focus {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
-    .game-main-table-wrap table {
-        min-width: 480px;
+
+    /* Make table progress bars and item buttons fluid on mobile */
+    .game-main-table-wrap .progress-bar {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    .game-main-table-wrap .item-button {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
     }
 
     /* Notification width on mobile */
