@@ -1220,7 +1220,11 @@ function exportGameData() {
 
 // Read saved language directly from localStorage before rows are created
 var _savedLlm = localStorage.getItem('llmConfig');
-if (_savedLlm) { try { var _p = JSON.parse(_savedLlm); if (_p.language) currentLanguage = _p.language; } catch(e) {} }
+if (_savedLlm) {
+    try { var _p = JSON.parse(_savedLlm); if (_p.language) currentLanguage = _p.language; } catch(e) {}
+} else {
+    currentLanguage = detectBrowserLanguage();
+}
 
 createAllRows(jobCategories, "jobTable")
 createAllRows(skillCategories, "skillTable")

@@ -1041,16 +1041,26 @@ function saveLLMConfig() {
     }));
 }
 
+function detectBrowserLanguage() {
+    var nav = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+    if (nav.startsWith('zh')) return 'zh';
+    if (nav.startsWith('ja')) return 'ja';
+    if (nav.startsWith('ko')) return 'ko';
+    return 'en';
+}
+
 function loadLLMConfig() {
     var saved = localStorage.getItem('llmConfig');
     if (saved) {
         var parsed = JSON.parse(saved);
         llmConfig.provider = parsed.provider || 'xai';
         llmConfig.model = parsed.model || '';
-        llmConfig.language = parsed.language || 'en';
+        llmConfig.language = parsed.language || detectBrowserLanguage();
         llmConfig.enabled = parsed.enabled !== false;
         llmConfig.useOwnKey = parsed.useOwnKey || false;
         llmConfig.ownApiKey = parsed.ownApiKey || '';
+    } else {
+        llmConfig.language = detectBrowserLanguage();
     }
     initCredits();
 }
