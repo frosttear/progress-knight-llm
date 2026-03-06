@@ -54,6 +54,12 @@ function applyLanguageToUI() {
         titles[i].title = t(titles[i].getAttribute('data-i18n-title'));
     }
     document.title = t('game_title');
+    var guideLang = currentLanguage === 'zh' ? 'zh' : 'en';
+    var guideLangs = document.querySelectorAll('.guide-lang');
+    for (var i = 0; i < guideLangs.length; i++) {
+        var el = guideLangs[i];
+        el.classList.toggle('active', el.getAttribute('data-lang') === guideLang);
+    }
     refreshEntityNames();
     refreshHeaderRows();
     refreshRequiredRowLabels();

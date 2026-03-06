@@ -149,6 +149,7 @@
                 <div class="w3-button w3-bar-item tabButton" id="shopTabButton" onClick="setTab(this, 'shop')" data-i18n="tab_shop">Shop</div>
                 <div class="w3-button w3-bar-item tabButton" id="rebirthTabButton" onClick="setTab(this, 'rebirth')" data-i18n="tab_amulet">Amulet</div>
                 <div class="w3-button w3-bar-item tabButton" id="storyTabButton" onClick="setTab(this, 'story'); updateStoryLogUI(); updateActiveEffectsUI();" data-i18n="tab_story">Story</div>
+                <div class="w3-button w3-bar-item tabButton" onClick="setTab(this, 'guide')" data-i18n="tab_guide">Guide</div>
                 <div class="w3-button w3-bar-item tabButton" onClick="setTab(this, 'settings')" style="margin-left: auto" data-i18n="tab_settings">Settings</div>
             </div>
 
@@ -297,6 +298,382 @@
                     <div id="storyLogContent"></div>
                     <h2 style="color: #55a630; margin-top: 24px" data-i18n="story_active_effects">Active Story Effects</h2>
                     <div id="activeEffectsContent"></div>
+                </div>
+
+                <div class="tab" id="guide">
+                    <div class="guide-panel">
+
+                        <!-- Basics intro -->
+                        <div class="guide-section">
+                            <h2 class="guide-h2" data-i18n="guide_basics_title">How to Play</h2>
+                            <div class="guide-lang" data-lang="en">
+                                <p>You play as a character caught in a cycle of reincarnation. Each life has a fixed lifespan — use it to earn coins through <strong>jobs</strong>, stack multipliers through <strong>skills</strong>, and push as far as you can before time runs out. When you rebirth, key achievements carry forward into your next life.</p>
+                                <ul style="padding-left:20px; line-height:1.9">
+                                    <li><strong>Jobs</strong> earn coins every day. Click a job row to switch to it.</li>
+                                    <li><strong>Skills</strong> grant passive multipliers (XP speed, income, lifespan…). Click a skill row to train it.</li>
+                                    <li><strong>Shop</strong> lets you buy housing and equipment that further boost stats — but they cost coins per day.</li>
+                                    <li><strong>Auto-promote</strong> automatically switches you to the next job when requirements are met. <span style="color:#e63946">Caution: can cause bankruptcy if you enter Military track.</span></li>
+                                    <li><strong>Auto-learn</strong> automatically trains the skill with the lowest level (skipping skills marked Skip).</li>
+                                    <li>When you reach <strong>age 25</strong>, the Amulet tab unlocks — touch the eye to <strong>rebirth</strong> and carry max-level bonuses into your next life.</li>
+                                    <li><strong>Story events</strong> trigger at milestone levels and may grant temporary bonuses.</li>
+                                </ul>
+                            </div>
+                            <div class="guide-lang" data-lang="zh">
+                                <p>你扮演一个在轮回中不断重生的角色。每一世都有固定的寿命上限，你需要在有限的时间内通过<strong>职业</strong>赚取金币、通过<strong>技能</strong>积累倍率加成，并在寿命耗尽前尽可能走得更远。转生后，部分成就将延续到下一世。</p>
+                                <ul style="padding-left:20px; line-height:1.9">
+                                    <li><strong>职业</strong>每天产生金币收入。点击职业行可切换职业。</li>
+                                    <li><strong>技能</strong>提供被动倍率（经验速度、收入、寿命等）。点击技能行可开始训练。</li>
+                                    <li><strong>商店</strong>可购买住房和装备，进一步提升属性——但每天需要支出金币。</li>
+                                    <li><strong>自动晋升</strong>会在满足条件时自动切换到下一个职业。<span style="color:#e63946">注意：进入军事路线时可能导致破产。</span></li>
+                                    <li><strong>自动学习</strong>会自动训练等级最低的技能（跳过勾选了"跳过"的技能）。</li>
+                                    <li>当你达到 <strong>25岁</strong>时，护符栏解锁——触摸眼睛即可<strong>转生</strong>，将最高等级加成带入下一世。</li>
+                                    <li><strong>故事事件</strong>在关键等级触发，可能带来临时加成。</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Key Mechanics -->
+                        <div class="guide-section">
+                            <h2 class="guide-h2" data-i18n="guide_mechanics_title">Key Mechanics</h2>
+                            <div class="guide-lang" data-lang="en">
+                                <table class="guide-table"><tr><th>Mechanic</th><th>Formula</th></tr>
+                                <tr><td>XP gain</td><td><code>10 × all XP multipliers × game speed</code></td></tr>
+                                <tr><td>Job income</td><td><code>baseIncome × (1 + log10(level+1)) × multipliers</code></td></tr>
+                                <tr><td>Level multiplier</td><td>Lvl 1=×1.0 | Lvl 9=×2.0 | Lvl 99=×3.0</td></tr>
+                                <tr><td>Happiness</td><td>Multiplies <em>all</em> XP. Boosted by Meditation, housing, Butler.</td></tr>
+                                <tr><td>Skill effect</td><td><code>1 + (effect × level)</code> — most skills cap ×2.0 at lvl 100.</td></tr>
+                                <tr><td>Bankruptcy</td><td>Coins negative → housing resets to Homeless, misc items lost.</td></tr>
+                                </table>
+                            </div>
+                            <div class="guide-lang" data-lang="zh">
+                                <table class="guide-table"><tr><th>机制</th><th>公式</th></tr>
+                                <tr><td>经验获取</td><td><code>10 × 所有经验倍率（连乘）× 游戏速度</code></td></tr>
+                                <tr><td>职业收入</td><td><code>基础收入 × (1 + log10(等级+1)) × 倍率</code></td></tr>
+                                <tr><td>等级倍率</td><td>1级=×1.0 | 9级=×2.0 | 99级=×3.0</td></tr>
+                                <tr><td>幸福度</td><td>倍增<em>所有</em>经验。由冥想、住房、管家提升。</td></tr>
+                                <tr><td>技能效果</td><td><code>1 + (效果值 × 等级)</code>，大多数技能100级达到×2.0。</td></tr>
+                                <tr><td>破产</td><td>金币变负 → 住房重置为无家可归，杂项物品丢失。</td></tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Strategy -->
+                        <div class="guide-section">
+                            <h2 class="guide-h2" data-i18n="guide_strategy_title">Optimal Strategy</h2>
+                            <div class="guide-lang" data-lang="en">
+                                <div class="guide-phase"><h3>Phase 1 — Early Life</h3><ol>
+                                    <li>Stay on <strong>Beggar</strong> (0 expenses) and grind <strong>Concentration</strong> first — it multiplies all skill XP.</li>
+                                    <li>Grind <strong>Bargaining</strong> simultaneously — slashes all expenses toward a 10% floor.</li>
+                                    <li>Buy <strong>Book</strong> (10 coins/day) as soon as Fisherman income covers it — ×1.5 all skill XP.</li>
+                                    <li>Upgrade Farmer → Fisherman → Miner only after Bargaining is high and income exceeds expenses.</li>
+                                </ol></div>
+                                <div class="guide-phase"><h3>Phase 2 — Mid Life</h3><ol>
+                                    <li>Level <strong>Productivity</strong> — ×2.0 job XP at max, reach high-paying jobs much faster.</li>
+                                    <li>Level <strong>Meditation</strong> — happiness multiplies all XP, stacks with everything.</li>
+                                    <li>Upgrade housing only when <code>net income ≥ 2× housing expense</code>.</li>
+                                    <li>Unlock <strong>Military or Arcane</strong> track based on your rebirth count.</li>
+                                </ol></div>
+                                <div class="guide-phase"><h3>Phase 3 — Late Life</h3><ol>
+                                    <li>Level <strong>Immortality</strong> + <strong>Super immortality</strong> — more time = more everything.</li>
+                                    <li>Level <strong>Time warping</strong> — multiplies raw game speed. Most powerful late-game skill.</li>
+                                    <li>Aim for <strong>Mage / Wizard</strong> on Arcane for best income per XP invested.</li>
+                                </ol></div>
+                                <div class="guide-note">⚠️ <strong>Auto-promote warning:</strong> Squire pays only 5 coins/day — worse than Beggar. Disable auto-promote before switching to Military track.</div>
+                            </div>
+                            <div class="guide-lang" data-lang="zh">
+                                <div class="guide-phase"><h3>第一阶段 — 生命初期</h3><ol>
+                                    <li>留在<strong>乞丐</strong>（零支出），优先刷<strong>专注</strong>——倍增所有技能经验。</li>
+                                    <li>同步刷<strong>议价</strong>——将支出压至10%下限，是保持余额的最重要手段。</li>
+                                    <li>渔夫收入能覆盖后，购买<strong>书本</strong>（10枚/天）——以极低代价获得×1.5技能经验。</li>
+                                    <li>只有在议价足够高、收入稳定后，再升职 农民→渔夫→矿工。</li>
+                                </ol></div>
+                                <div class="guide-phase"><h3>第二阶段 — 生命中期</h3><ol>
+                                    <li>刷<strong>效率</strong>——满级×2.0职业经验，大幅加速升至高收入职业。</li>
+                                    <li>刷<strong>冥想</strong>——幸福度倍增所有经验，与其他加成叠乘。</li>
+                                    <li>升级住房前确保 <code>净收入 ≥ 新支出的2倍</code>。</li>
+                                    <li>根据转生次数选择进入<strong>军事</strong>或<strong>秘法协会</strong>路线。</li>
+                                </ol></div>
+                                <div class="guide-phase"><h3>第三阶段 — 生命末期</h3><ol>
+                                    <li>刷<strong>不朽</strong>＋<strong>超级不朽</strong>——时间越长，收益越高。</li>
+                                    <li>刷<strong>时间扭曲</strong>——直接提升游戏速度，后期最强技能。</li>
+                                    <li>秘法路线以<strong>法师/巫师</strong>为目标，单位经验的收入回报最高。</li>
+                                </ol></div>
+                                <div class="guide-note">⚠️ <strong>自动晋升警告：</strong>侍从每天仅赚5枚——比乞丐还差。切换军事路线前请先关闭自动晋升。</div>
+                            </div>
+                        </div>
+
+                        <!-- Career Path -->
+                        <div class="guide-section">
+                            <h2 class="guide-h2" data-i18n="guide_career_title">Early Lives Career Path</h2>
+                            <div class="guide-lang" data-lang="en">
+                                <p style="color:gray; font-size:0.9em; margin-top:0">Recommended progression for lives 1–3. Each step shows the target, when to switch, and what to prioritise.</p>
+
+                                <div class="guide-career-path">
+
+                                    <div class="guide-career-step">
+                                        <div class="guide-career-marker" style="background:#555">1</div>
+                                        <div class="guide-career-body">
+                                            <div class="guide-career-header"><strong>Beggar</strong> <span class="guide-career-income">5 coins/day</span></div>
+                                            <div class="guide-career-sub">Stay here until Concentration ~20 + Bargaining ~15</div>
+                                            <div class="guide-career-why">Why: Zero expenses, safe to grind skills. Bargaining reduces all future costs. Concentration multiplies every other skill.</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="guide-career-arrow">↓</div>
+
+                                    <div class="guide-career-step">
+                                        <div class="guide-career-marker" style="background:#2e7d32">2</div>
+                                        <div class="guide-career-body">
+                                            <div class="guide-career-header"><strong>Farmer → Fisherman</strong> <span class="guide-career-income">9 → 15 coins/day</span></div>
+                                            <div class="guide-career-sub">Switch when Bargaining ≥ 15 and balance is stable</div>
+                                            <div class="guide-career-why">Buy <strong>Book</strong> (10/day) as soon as Fisherman income covers it — ×1.5 all skill XP for nearly free. Unlock <strong>Tent</strong> housing (15/day) once net income is safely positive.</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="guide-career-arrow">↓</div>
+
+                                    <div class="guide-career-step">
+                                        <div class="guide-career-marker" style="background:#1565c0">3</div>
+                                        <div class="guide-career-body">
+                                            <div class="guide-career-header"><strong>Miner → Blacksmith</strong> <span class="guide-career-income">40 → 80 coins/day</span></div>
+                                            <div class="guide-career-sub">Switch when Bargaining ≥ 30, Productivity ≥ 10</div>
+                                            <div class="guide-career-why">Miner income covers Book + Tent comfortably. Now grind <strong>Productivity</strong> (×2.0 job XP) and <strong>Meditation</strong> (happiness ×2.0 XP). Blacksmith unlocks <strong>Personal squire</strong> equipment once leveled.</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="guide-career-arrow">↓</div>
+
+                                    <div class="guide-career-step">
+                                        <div class="guide-career-marker" style="background:#6a1f8a">4</div>
+                                        <div class="guide-career-body">
+                                            <div class="guide-career-header"><strong>Merchant</strong> <span class="guide-career-income">150 coins/day</span></div>
+                                            <div class="guide-career-sub">Life 1 rebirth target. Reach by mid-life with Productivity leveled.</div>
+                                            <div class="guide-career-why">Best Common Work income. Upgrade housing to <strong>Wooden Hut → Cottage</strong> once net income ≥ 2× expense. Grind <strong>Immortality</strong> to extend your life and maximise max-level bonuses carried into rebirth.</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="guide-career-arrow">↓ <span style="color:#E5C100; font-size:0.85em">Rebirth 1 →</span></div>
+
+                                    <div class="guide-career-step">
+                                        <div class="guide-career-marker" style="background:#b5770d">5</div>
+                                        <div class="guide-career-body">
+                                            <div class="guide-career-header"><strong>Miner → Merchant → Veteran footman / Student</strong></div>
+                                            <div class="guide-career-sub">Life 2: max-level bonuses let you reach Merchant much faster, then branch</div>
+                                            <div class="guide-career-why">With Concentration + Productivity max levels carried, push to <strong>Veteran footman</strong> (120/day, military path) or <strong>Student → Apprentice mage</strong> (Arcane path). Arcane is stronger long-term — Mana control makes its huge XP walls manageable.</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="guide-career-arrow">↓ <span style="color:#E5C100; font-size:0.85em">Rebirth 2 →</span></div>
+
+                                    <div class="guide-career-step">
+                                        <div class="guide-career-marker" style="background:#c0392b">6</div>
+                                        <div class="guide-career-body">
+                                            <div class="guide-career-header"><strong>Mage / Knight → Wizard / Elite knight</strong> <span class="guide-career-income">7,500 → 50,000+ coins/day</span></div>
+                                            <div class="guide-career-sub">Life 3+: aim for Mage or Knight as early milestone, then push to Wizard / Elite knight</div>
+                                            <div class="guide-career-why">Mage (7,500/day) is the inflection point — income explodes from here. Level <strong>Time warping</strong> and <strong>Super immortality</strong> to maximise life length and speed. Arcane track leads to Chairman (1,000,000/day) as the endgame.</div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="guide-note" style="margin-top:16px">
+                                    💡 <strong>Key income thresholds to remember:</strong>
+                                    Tent = 15/day &nbsp;|&nbsp; Book = 10/day &nbsp;|&nbsp; Wooden Hut = 50/day &nbsp;|&nbsp; Cottage = 100/day &nbsp;|&nbsp; House = 300/day.
+                                    Never spend more than 50% of net income on housing.
+                                </div>
+                            </div>
+
+                            <div class="guide-lang" data-lang="zh">
+                                <p style="color:gray; font-size:0.9em; margin-top:0">适用于第1-3世的推荐推进路线。每步标注切换时机与优先事项。</p>
+
+                                <div class="guide-career-path">
+
+                                    <div class="guide-career-step">
+                                        <div class="guide-career-marker" style="background:#555">1</div>
+                                        <div class="guide-career-body">
+                                            <div class="guide-career-header"><strong>乞丐</strong> <span class="guide-career-income">5枚/天</span></div>
+                                            <div class="guide-career-sub">待到专注 ~20级、议价 ~15级</div>
+                                            <div class="guide-career-why">零支出，可以安全刷技能。议价降低所有支出，专注倍增其他所有技能经验。</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="guide-career-arrow">↓</div>
+
+                                    <div class="guide-career-step">
+                                        <div class="guide-career-marker" style="background:#2e7d32">2</div>
+                                        <div class="guide-career-body">
+                                            <div class="guide-career-header"><strong>农民 → 渔夫</strong> <span class="guide-career-income">9 → 15枚/天</span></div>
+                                            <div class="guide-career-sub">议价 ≥ 15级且余额稳定时切换</div>
+                                            <div class="guide-career-why">渔夫收入能覆盖后立刻购买<strong>书本</strong>（10/天）——几乎免费获得×1.5技能经验。净收入稳定后解锁<strong>帐篷</strong>住房（15/天）。</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="guide-career-arrow">↓</div>
+
+                                    <div class="guide-career-step">
+                                        <div class="guide-career-marker" style="background:#1565c0">3</div>
+                                        <div class="guide-career-body">
+                                            <div class="guide-career-header"><strong>矿工 → 铁匠</strong> <span class="guide-career-income">40 → 80枚/天</span></div>
+                                            <div class="guide-career-sub">议价 ≥ 30级、效率 ≥ 10级时切换</div>
+                                            <div class="guide-career-why">矿工收入轻松覆盖书本+帐篷。现在刷<strong>效率</strong>（×2.0职业经验）和<strong>冥想</strong>（幸福度×2.0经验）。铁匠满级后可购买<strong>个人侍从</strong>装备。</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="guide-career-arrow">↓</div>
+
+                                    <div class="guide-career-step">
+                                        <div class="guide-career-marker" style="background:#6a1f8a">4</div>
+                                        <div class="guide-career-body">
+                                            <div class="guide-career-header"><strong>商人</strong> <span class="guide-career-income">150枚/天</span></div>
+                                            <div class="guide-career-sub">第一世转生目标，效率满级后可在生命中期达到</div>
+                                            <div class="guide-career-why">普通工作最高收入。净收入 ≥ 支出2倍后升级<strong>木屋 → 小屋</strong>。刷<strong>不朽</strong>延长寿命，将最高等级加成最大化带入转生。</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="guide-career-arrow">↓ <span style="color:#E5C100; font-size:0.85em">第一次转生 →</span></div>
+
+                                    <div class="guide-career-step">
+                                        <div class="guide-career-marker" style="background:#b5770d">5</div>
+                                        <div class="guide-career-body">
+                                            <div class="guide-career-header"><strong>矿工 → 商人 → 老兵步兵 / 学生</strong></div>
+                                            <div class="guide-career-sub">第二世：最高等级加成让你更快到达商人，然后分叉</div>
+                                            <div class="guide-career-why">携带专注+效率最高等级，推进至<strong>老兵步兵</strong>（120/天，军事路线）或<strong>学生 → 见习法师</strong>（秘法路线）。秘法路线长期更强——魔力控制让庞大的经验门槛变得可接受。</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="guide-career-arrow">↓ <span style="color:#E5C100; font-size:0.85em">第二次转生 →</span></div>
+
+                                    <div class="guide-career-step">
+                                        <div class="guide-career-marker" style="background:#c0392b">6</div>
+                                        <div class="guide-career-body">
+                                            <div class="guide-career-header"><strong>法师 / 骑士 → 巫师 / 精英骑士</strong> <span class="guide-career-income">7,500 → 50,000+枚/天</span></div>
+                                            <div class="guide-career-sub">第三世+：以法师或骑士为早期里程碑，再推向巫师/精英骑士</div>
+                                            <div class="guide-career-why">法师（7,500/天）是收入拐点。刷<strong>时间扭曲</strong>和<strong>超级不朽</strong>最大化生命长度和速度。秘法路线终点为主席（1,000,000/天）。</div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="guide-note" style="margin-top:16px">
+                                    💡 <strong>关键收入门槛：</strong>
+                                    帐篷=15/天 &nbsp;|&nbsp; 书本=10/天 &nbsp;|&nbsp; 木屋=50/天 &nbsp;|&nbsp; 小屋=100/天 &nbsp;|&nbsp; 房子=300/天。
+                                    住房支出不超过净收入的50%。
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Jobs table -->
+                        <div class="guide-section">
+                            <h2 class="guide-h2" data-i18n="guide_jobs_title">Jobs</h2>
+                            <div class="guide-lang" data-lang="en">
+                                <h3 class="guide-h3" style="color:#55a630">Common Work</h3>
+                                <div class="guide-table-wrap"><table class="guide-table"><tr><th>Job</th><th>Income/day</th><th>XP needed</th><th>Notes</th></tr>
+                                <tr><td>Beggar</td><td>5</td><td>50</td><td>Start here. 0 expenses — safe skill grinding base.</td></tr>
+                                <tr><td>Farmer</td><td>9</td><td>100</td><td>Marginal. Skip quickly.</td></tr>
+                                <tr><td>Fisherman</td><td>15</td><td>200</td><td>Covers Tent. First housing unlock.</td></tr>
+                                <tr><td>Miner</td><td>40</td><td>400</td><td>Good mid-early. Covers Book + Tent.</td></tr>
+                                <tr><td>Blacksmith</td><td>80</td><td>800</td><td>Solid income base.</td></tr>
+                                <tr><td>Merchant</td><td class="guide-good">150</td><td>1,600</td><td>Best Common income. Good first-rebirth target.</td></tr>
+                                </table></div>
+                                <h3 class="guide-h3" style="color:#e63946">Military</h3>
+                                <div class="guide-table-wrap"><table class="guide-table"><tr><th>Job</th><th>Income/day</th><th>XP needed</th><th>Notes</th></tr>
+                                <tr><td>Squire</td><td class="guide-warn">5</td><td>100</td><td class="guide-warn">Income trap — worse than Beggar!</td></tr>
+                                <tr><td>Footman</td><td>50</td><td>1,000</td><td>Recovers to Miner-level income.</td></tr>
+                                <tr><td>Veteran footman</td><td>120</td><td>10,000</td><td>Surpasses Merchant.</td></tr>
+                                <tr><td>Knight</td><td>300</td><td>100,000</td><td>Strong but large XP wall.</td></tr>
+                                <tr><td>Veteran knight</td><td>1,000</td><td>1,000,000</td><td>Major income jump.</td></tr>
+                                <tr><td>Elite knight</td><td>3,000</td><td>7,500,000</td><td>Excellent late-game.</td></tr>
+                                <tr><td>Holy knight</td><td>15,000</td><td>40,000,000</td><td>Endgame military.</td></tr>
+                                <tr><td>Legendary knight</td><td class="guide-good">50,000</td><td>150,000,000</td><td>Top military income.</td></tr>
+                                </table></div>
+                                <h3 class="guide-h3" style="color:#C71585">Arcane Association</h3>
+                                <div class="guide-table-wrap"><table class="guide-table"><tr><th>Job</th><th>Income/day</th><th>XP needed</th><th>Notes</th></tr>
+                                <tr><td>Student</td><td>100</td><td>100,000</td><td>Required entry. Low income but unlocks best track.</td></tr>
+                                <tr><td>Apprentice mage</td><td>1,000</td><td>1,000,000</td><td>Same as Veteran knight but reachable sooner.</td></tr>
+                                <tr><td>Mage</td><td class="guide-good">7,500</td><td>10,000,000</td><td>Best mid-game income. Strong rebirth 1 target.</td></tr>
+                                <tr><td>Wizard</td><td class="guide-good">50,000</td><td>100,000,000</td><td>Tied with Legendary knight. Better XP efficiency.</td></tr>
+                                <tr><td>Master wizard</td><td>250,000</td><td>10,000,000,000</td><td>Endgame. Needs heavy Mana control.</td></tr>
+                                <tr><td>Chairman</td><td class="guide-good">1,000,000</td><td>1,000,000,000,000</td><td>Ultimate income ceiling.</td></tr>
+                                </table></div>
+                            </div>
+                            <div class="guide-lang" data-lang="zh">
+                                <h3 class="guide-h3" style="color:#55a630">普通工作</h3>
+                                <div class="guide-table-wrap"><table class="guide-table"><tr><th>职业</th><th>收入/天</th><th>所需经验</th><th>点评</th></tr>
+                                <tr><td>乞丐</td><td>5</td><td>50</td><td>起点。零支出，前期刷技能的安全基地。</td></tr>
+                                <tr><td>农民</td><td>9</td><td>100</td><td>提升微乎其微，尽快跳过。</td></tr>
+                                <tr><td>渔夫</td><td>15</td><td>200</td><td>可支付帐篷。首个住房解锁门槛。</td></tr>
+                                <tr><td>矿工</td><td>40</td><td>400</td><td>前期中坚，可覆盖书本+帐篷。</td></tr>
+                                <tr><td>铁匠</td><td>80</td><td>800</td><td>稳定收入基础。</td></tr>
+                                <tr><td>商人</td><td class="guide-good">150</td><td>1,600</td><td>普通工作最高收入，第一次转生理想目标。</td></tr>
+                                </table></div>
+                                <h3 class="guide-h3" style="color:#e63946">军事</h3>
+                                <div class="guide-table-wrap"><table class="guide-table"><tr><th>职业</th><th>收入/天</th><th>所需经验</th><th>点评</th></tr>
+                                <tr><td>侍从</td><td class="guide-warn">5</td><td>100</td><td class="guide-warn">收入陷阱——比乞丐还差！</td></tr>
+                                <tr><td>步兵</td><td>50</td><td>1,000</td><td>恢复到矿工水平收入。</td></tr>
+                                <tr><td>老兵步兵</td><td>120</td><td>10,000</td><td>超过商人。</td></tr>
+                                <tr><td>骑士</td><td>300</td><td>100,000</td><td>强劲但经验门槛高。</td></tr>
+                                <tr><td>老兵骑士</td><td>1,000</td><td>1,000,000</td><td>收入大幅跃升。</td></tr>
+                                <tr><td>精英骑士</td><td>3,000</td><td>7,500,000</td><td>后期优秀收入。</td></tr>
+                                <tr><td>圣骑士</td><td>15,000</td><td>40,000,000</td><td>军事路线终局级别。</td></tr>
+                                <tr><td>传奇骑士</td><td class="guide-good">50,000</td><td>150,000,000</td><td>军事最高收入。</td></tr>
+                                </table></div>
+                                <h3 class="guide-h3" style="color:#C71585">秘法协会</h3>
+                                <div class="guide-table-wrap"><table class="guide-table"><tr><th>职业</th><th>收入/天</th><th>所需经验</th><th>点评</th></tr>
+                                <tr><td>学生</td><td>100</td><td>100,000</td><td>必经之路，收入偏低但解锁最强路线。</td></tr>
+                                <tr><td>见习法师</td><td>1,000</td><td>1,000,000</td><td>与老兵骑士相同，魔力控制可更早到达。</td></tr>
+                                <tr><td>法师</td><td class="guide-good">7,500</td><td>10,000,000</td><td>中期最佳收入，第一次转生强力目标。</td></tr>
+                                <tr><td>巫师</td><td class="guide-good">50,000</td><td>100,000,000</td><td>与传奇骑士持平，经验效率更高。</td></tr>
+                                <tr><td>大巫师</td><td>250,000</td><td>10,000,000,000</td><td>终局级，需深度投资魔力控制。</td></tr>
+                                <tr><td>主席</td><td class="guide-good">1,000,000</td><td>1,000,000,000,000</td><td>收入上限极高，终极目标。</td></tr>
+                                </table></div>
+                            </div>
+                        </div>
+
+                        <!-- Skills tier -->
+                        <div class="guide-section">
+                            <h2 class="guide-h2" data-i18n="guide_skills_title">Skill Tier List</h2>
+                            <div class="guide-lang" data-lang="en">
+                                <div class="guide-tier-list">
+                                    <div class="guide-tier-row"><span class="guide-tier-label" style="color:#E5C100">S</span><div class="guide-tier-items"><span class="guide-tier-item" style="color:#E5C100">Time warping</span><span class="guide-tier-item" style="color:#E5C100">Concentration</span><span class="guide-tier-item" style="color:#E5C100">Bargaining</span><span class="guide-tier-item" style="color:#E5C100">Mana control</span><span class="guide-tier-item" style="color:#E5C100">Dark influence</span><span class="guide-tier-item" style="color:#E5C100">Demon training</span></div></div>
+                                    <div class="guide-tier-row"><span class="guide-tier-label" style="color:#55a630">A</span><div class="guide-tier-items"><span class="guide-tier-item" style="color:#55a630">Productivity</span><span class="guide-tier-item" style="color:#55a630">Immortality</span><span class="guide-tier-item" style="color:#55a630">Super immortality</span><span class="guide-tier-item" style="color:#55a630">Demon's wealth</span><span class="guide-tier-item" style="color:#55a630">Intimidation</span></div></div>
+                                    <div class="guide-tier-row"><span class="guide-tier-label" style="color:#2e94e7">B</span><div class="guide-tier-items"><span class="guide-tier-item" style="color:#2e94e7">Meditation</span><span class="guide-tier-item" style="color:#2e94e7">Strength</span><span class="guide-tier-item" style="color:#2e94e7">Battle tactics</span><span class="guide-tier-item" style="color:#2e94e7">Evil control</span></div></div>
+                                    <div class="guide-tier-row"><span class="guide-tier-label" style="color:#888">C</span><div class="guide-tier-items"><span class="guide-tier-item" style="color:#888">Muscle memory</span><span class="guide-tier-item" style="color:#888">Blood meditation</span></div></div>
+                                </div>
+                            </div>
+                            <div class="guide-lang" data-lang="zh">
+                                <div class="guide-tier-list">
+                                    <div class="guide-tier-row"><span class="guide-tier-label" style="color:#E5C100">S</span><div class="guide-tier-items"><span class="guide-tier-item" style="color:#E5C100">时间扭曲</span><span class="guide-tier-item" style="color:#E5C100">专注</span><span class="guide-tier-item" style="color:#E5C100">议价</span><span class="guide-tier-item" style="color:#E5C100">魔力控制</span><span class="guide-tier-item" style="color:#E5C100">黑暗影响</span><span class="guide-tier-item" style="color:#E5C100">恶魔训练</span></div></div>
+                                    <div class="guide-tier-row"><span class="guide-tier-label" style="color:#55a630">A</span><div class="guide-tier-items"><span class="guide-tier-item" style="color:#55a630">效率</span><span class="guide-tier-item" style="color:#55a630">不朽</span><span class="guide-tier-item" style="color:#55a630">超级不朽</span><span class="guide-tier-item" style="color:#55a630">恶魔财富</span><span class="guide-tier-item" style="color:#55a630">恐吓</span></div></div>
+                                    <div class="guide-tier-row"><span class="guide-tier-label" style="color:#2e94e7">B</span><div class="guide-tier-items"><span class="guide-tier-item" style="color:#2e94e7">冥想</span><span class="guide-tier-item" style="color:#2e94e7">力量</span><span class="guide-tier-item" style="color:#2e94e7">战术</span><span class="guide-tier-item" style="color:#2e94e7">邪恶控制</span></div></div>
+                                    <div class="guide-tier-row"><span class="guide-tier-label" style="color:#888">C</span><div class="guide-tier-items"><span class="guide-tier-item" style="color:#888">肌肉记忆</span><span class="guide-tier-item" style="color:#888">血之冥想</span></div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Balance safety -->
+                        <div class="guide-section">
+                            <h2 class="guide-h2" data-i18n="guide_balance_title">Balance Safety Rules</h2>
+                            <div class="guide-lang" data-lang="en">
+                                <table class="guide-table"><tr><th>Situation</th><th>Action</th></tr>
+                                <tr><td>Income &lt; Expense</td><td>Downgrade housing or drop misc items immediately.</td></tr>
+                                <tr><td>Switching to expensive housing</td><td>Ensure <code>income ≥ 2× housing expense</code>.</td></tr>
+                                <tr><td>Bargaining at level 0</td><td>Avoid any housing above Tent (15 coins/day).</td></tr>
+                                <tr><td>Auto-promote enabled</td><td>Watch for Squire — drops income to 5 coins/day.</td></tr>
+                                <tr><td>Entering Military/Arcane</td><td>Disable auto-promote and switch manually.</td></tr>
+                                </table>
+                            </div>
+                            <div class="guide-lang" data-lang="zh">
+                                <table class="guide-table"><tr><th>情况</th><th>应对措施</th></tr>
+                                <tr><td>收入 &lt; 支出</td><td>立即降级住房或取消杂项物品。</td></tr>
+                                <tr><td>切换至更贵的住房</td><td>确保 <code>收入 ≥ 新支出的2倍</code>。</td></tr>
+                                <tr><td>议价处于0级</td><td>避免使用超过帐篷（15枚/天）的住房。</td></tr>
+                                <tr><td>开启自动晋升</td><td>注意侍从切换——收入会跌至5枚/天。</td></tr>
+                                <tr><td>进入军事/秘法路线</td><td>先关闭自动晋升，收入稳定后再手动切换。</td></tr>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
 
                 <div class="tab" id="settings">
