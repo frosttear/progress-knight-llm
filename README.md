@@ -38,6 +38,9 @@ Progress Knight is a life-sim incremental game set in a fantasy/medieval world. 
 
 ---
 
+### Play Progress Knight LLM Edition
+- [Github Pages](https://frosttear.github.io/progress-knight-llm)
+
 ### Original Game
 - [Play](https://ihtasham42.github.io/progress-knight/)
 - [Source](https://github.com/ihtasham42/progress-knight)
