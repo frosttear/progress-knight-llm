@@ -591,17 +591,20 @@ async function generateRebirthReview() {
         addNotification(t('notif_no_credits_rebirth'));
         return;
     }
-    var lifeNum = getCurrentLifeNumber();
+    // Attribute the review to the life that just ended (before rebirthCount incremented)
+    var lifeNum = getCurrentLifeNumber() - 1;
+    if (lifeNum < 1) lifeNum = 1;
     var ctx = getGameContext();
     var prompt = buildRebirthReviewPrompt(ctx);
 
-    // Show loading modal immediately so the player sees something right away
+    // Show loading modal and pause game
     showStoryModal(t('story_life_review') + ' — ' + getLifeLabel(lifeNum), t('story_review_loading'), null);
 
     var result = await callLLM(prompt);
 
     if (result && result.story) {
-        var scaledRebirthEffect = result.effect ? applyStoryEffect(result.effect) : null;
+        if (result.effect) result.effect.duration = 'permanent';
+        var scaledRebirthEffect = result.effect ? applyStoryEffect(result.effect, 0, true) : null;
         addStoryEntry({
             type: 'rebirth_review',
             taskName: '',
@@ -624,10 +627,12 @@ async function generateRebirthReview() {
     await _loadFallbackStories();
     if (_fallbackStories) {
         var rebirthKeys = ['rebirth_1', 'rebirth_2', 'rebirth_3'];
-        var key = rebirthKeys[((gameData.rebirthOneCount || 0) + (gameData.rebirthTwoCount || 0)) % rebirthKeys.length];
+        var key = rebirthKeys[((gameData.rebirthOneCount || 0) + (gameData.rebirthTwoCount || 0) - 1) % rebirthKeys.length];
         var fallback = _fallbackStories[key] || null;
         if (fallback) {
-            var scaledFallbackEffect = fallback.effect ? applyStoryEffect(_randomizeEffect(fallback.effect, key)) : null;
+            var rebirthEffect = fallback.effect ? _randomizeEffect(fallback.effect, '') : null;
+            if (rebirthEffect) rebirthEffect.duration = 'permanent';
+            var scaledFallbackEffect = rebirthEffect ? applyStoryEffect(rebirthEffect, 0, true) : null;
             addStoryEntry({
                 type: 'rebirth_review',
                 taskName: '',
@@ -658,6 +663,10 @@ async function processStoryQueue() {
     processingQueue = true;
 
     while (storyQueue.length > 0) {
+        // Wait if a modal (e.g. life review) is already open
+        while (isStoryModalOpen()) {
+            await new Promise(function(r) { setTimeout(r, 500); });
+        }
         var item = storyQueue.shift();
         await generateMilestoneStory(item.taskName, item.taskType, item.newLevel);
     }
@@ -864,12 +873,14 @@ function scaleEffectForLife(rawValue, requestedDuration) {
     };
 }
 
-function applyStoryEffect(effect, level) {
+function applyStoryEffect(effect, level, skipScale) {
     if (!effect || !effect.type) return;
     initStoryLog();
 
     var rawValue = parseFloat(effect.value) || 0.05;
-    var scaled = scaleEffectForLife(rawValue, effect.duration);
+    var scaled = skipScale
+        ? { value: Math.min(Math.max(rawValue, 0.01), 0.20), duration: effect.duration || 'permanent' }
+        : scaleEffectForLife(rawValue, effect.duration);
     var storyEffect = {
         type: normalizeEffectType(effect.type),
         target: resolveTargetName(effect.target),
@@ -990,9 +1001,17 @@ function updateNotificationUI() {
 // Story Modal UI
 // ============================================================
 
+function isStoryModalOpen() {
+    var overlay = document.getElementById('storyModalOverlay');
+    return overlay && overlay.style.display !== 'none';
+}
+
 function showStoryModal(title, storyText, effect) {
     var overlay = document.getElementById('storyModalOverlay');
     if (!overlay) return;
+
+    // Pause the game while modal is shown
+    if (typeof gameData !== 'undefined') gameData.paused = true;
 
     document.getElementById('storyModalTitle').textContent = title;
     document.getElementById('storyModalText').textContent = storyText;
@@ -1012,6 +1031,8 @@ function showStoryModal(title, storyText, effect) {
 function hideStoryModal() {
     var overlay = document.getElementById('storyModalOverlay');
     if (overlay) overlay.style.display = 'none';
+    // Unpause when modal closes
+    if (typeof gameData !== 'undefined') gameData.paused = false;
 }
 
 function describeEffect(effect) {
