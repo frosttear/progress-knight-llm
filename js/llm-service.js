@@ -591,9 +591,10 @@ async function generateRebirthReview() {
         addNotification(t('notif_no_credits_rebirth'));
         return;
     }
-    // Attribute the review to the life that just ended (before rebirthCount incremented)
-    var lifeNum = getCurrentLifeNumber() - 1;
-    if (lifeNum < 1) lifeNum = 1;
+    // Capture BEFORE any await — rebirthReset() runs synchronously after this call returns,
+    // so by the time awaited LLM resolves, days and counts have already been reset.
+    var lifeNum = getCurrentLifeNumber();  // not yet incremented — this IS the ending life
+    var endingDay = gameData.days;         // capture before rebirthReset resets to day 365*14
     var ctx = getGameContext();
     var prompt = buildRebirthReviewPrompt(ctx);
 
@@ -610,7 +611,7 @@ async function generateRebirthReview() {
             taskName: '',
             taskType: '',
             level: 0,
-            day: gameData.days,
+            day: endingDay,
             lifeNumber: lifeNum,
             text: result.story,
             effect: scaledRebirthEffect || null
@@ -627,7 +628,7 @@ async function generateRebirthReview() {
     await _loadFallbackStories();
     if (_fallbackStories) {
         var rebirthKeys = ['rebirth_1', 'rebirth_2', 'rebirth_3'];
-        var key = rebirthKeys[((gameData.rebirthOneCount || 0) + (gameData.rebirthTwoCount || 0) - 1) % rebirthKeys.length];
+        var key = rebirthKeys[((gameData.rebirthOneCount || 0) + (gameData.rebirthTwoCount || 0)) % rebirthKeys.length];
         var fallback = _fallbackStories[key] || null;
         if (fallback) {
             var rebirthEffect = fallback.effect ? _randomizeEffect(fallback.effect, '') : null;
@@ -638,7 +639,7 @@ async function generateRebirthReview() {
                 taskName: '',
                 taskType: '',
                 level: 0,
-                day: gameData.days,
+                day: endingDay,
                 lifeNumber: lifeNum,
                 text: fallback.text,
                 effect: scaledFallbackEffect || null
