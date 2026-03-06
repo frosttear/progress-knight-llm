@@ -1021,11 +1021,6 @@ function rebirthTwo() {
     gameData.evil += getEvilGain()
 
     rebirthReset()
-
-    for (taskName in gameData.taskData) {
-        var task = gameData.taskData[taskName]
-        task.maxLevel = 0
-    }    
 }
 
 function rebirthReset() {

@@ -430,7 +430,7 @@ function _popcount(n) {
 }
 
 function _levelBand(level) {
-    if (level <= 10)  return 'low';
+    if (level <= 9)   return 'low';
     if (level <= 49)  return 'mid';
     return 'high';
 }
@@ -462,9 +462,13 @@ function _randomizeEffect(baseEffect, taskName) {
             : ['life', 'life', 'permanent', 'permanent', 'permanent'];
     var duration = durations[(seed >> 6) % durations.length];
 
+    // Only xp_multiplier and income_bonus are job-targeted; others are always global
+    var target = (type === 'xp_multiplier' || type === 'income_bonus') ? taskName : '';
+
     return {
         type: type,
-        target: baseEffect.target || taskName,
+        target: target,
+        source: taskName,
         value: value,
         duration: duration
     };
@@ -507,7 +511,16 @@ function _pickFallbackStory(taskName, level) {
     for (var i = 0; i < _fallbackStoriesArr.length; i++) {
         var c = _fallbackStoriesArr[i];
         var score = 0;
-        if (c.key.indexOf(jobSnake) !== -1) score += 100;
+        // Use word-boundary-style match: key segment must equal jobSnake exactly
+        // e.g. "footman" must not match "veteran_footman"
+        var keyParts = c.key.split('_');
+        var jobParts = jobSnake.split('_');
+        var jobLen = jobParts.length;
+        var exactMatch = false;
+        for (var j = 0; j <= keyParts.length - jobLen; j++) {
+            if (keyParts.slice(j, j + jobLen).join('_') === jobSnake) { exactMatch = true; break; }
+        }
+        if (exactMatch) score += 100;
         if (c.key.indexOf('_' + band) !== -1) score += 10;
         if (typeof c.history_bits === 'number') {
             score += _popcount(playerBits & c.history_bits);
@@ -538,7 +551,7 @@ async function generateMilestoneStory(taskName, taskType, newLevel) {
         var result = await callLLM(prompt);
 
         if (result && result.story) {
-            var scaledEffect = result.effect ? applyStoryEffect(result.effect) : null;
+            var scaledEffect = result.effect ? applyStoryEffect(result.effect, newLevel) : null;
             addStoryEntry({
                 type: 'milestone',
                 taskName: taskName,
@@ -559,7 +572,7 @@ async function generateMilestoneStory(taskName, taskType, newLevel) {
     var fallback = _pickFallbackStory(taskName, newLevel);
     if (fallback) {
         var rawFallbackEffect = fallback.effect ? _randomizeEffect(fallback.effect, taskName) : null;
-        var scaledFallbackEffect = rawFallbackEffect ? applyStoryEffect(rawFallbackEffect) : null;
+        var scaledFallbackEffect = rawFallbackEffect ? applyStoryEffect(rawFallbackEffect, newLevel) : null;
         addStoryEntry({
             type: 'milestone',
             taskName: taskName,
@@ -693,13 +706,66 @@ function initStoryLog() {
         }
     }
     // Migrate unscaled effects on old storyLog entries so card display matches actual applied values
+    // Also fix targets: re-derive from taskName so job-specific effects display correctly
     for (var i = 0; i < gameData.storyLog.length; i++) {
         var entry = gameData.storyLog[i];
-        if (entry.effect && !entry.effect.scaled) {
+        if (!entry.effect) continue;
+        if (!entry.effect.scaled) {
             var s = scaleEffectForLife(parseFloat(entry.effect.value) || 0.05, entry.effect.duration);
             entry.effect.value = s.value;
             entry.effect.duration = s.duration;
             entry.effect.scaled = true;
+        }
+        // Fix target: if type uses a target and it's missing/unresolvable, use taskName
+        if (!entry.effect.level && entry.level) {
+            entry.effect.level = entry.level;
+        }
+        if (!entry.effect.source && entry.taskName) {
+            entry.effect.source = entry.taskName;
+        }
+        if (!entry.effect.target_fixed) {
+            var eType = entry.effect.type;
+            if (eType === 'xp_multiplier' || eType === 'income_bonus') {
+                if (entry.taskName && resolveTargetName(entry.effect.target) === '') {
+                    entry.effect.target = entry.taskName;
+                }
+            } else {
+                // happiness/lifespan are always global
+                entry.effect.target = '';
+            }
+            entry.effect.target_fixed = true;
+        }
+    }
+    // Also fix targets on storyEffects using storyLog as source of truth
+    for (var i = 0; i < gameData.storyEffects.length; i++) {
+        var eff = gameData.storyEffects[i];
+        if (!eff.target_fixed) {
+            var eType = eff.type;
+            if (eType === 'happiness_boost' || eType === 'lifespan_bonus') {
+                eff.target = '';
+            } else if (eff.target && resolveTargetName(eff.target) === '') {
+                for (var j = 0; j < gameData.storyLog.length; j++) {
+                    var le = gameData.storyLog[j];
+                    if (le.effect && le.effect.type === eType && le.taskName &&
+                        Math.abs((parseFloat(le.effect.value) || 0) - (parseFloat(eff.value) || 0)) < 0.001) {
+                        eff.target = le.taskName;
+                        break;
+                    }
+                }
+            }
+            eff.target_fixed = true;
+        }
+        // Always back-fill source and level if missing (runs even on already target_fixed entries)
+        if (!eff.source || !eff.level) {
+            for (var j = 0; j < gameData.storyLog.length; j++) {
+                var le = gameData.storyLog[j];
+                if (le.effect && le.effect.type === eff.type && le.taskName &&
+                    Math.abs((parseFloat(le.effect.value) || 0) - (parseFloat(eff.value) || 0)) < 0.001) {
+                    if (!eff.source && le.taskName) eff.source = le.taskName;
+                    if (!eff.level && le.level) eff.level = le.level;
+                    break;
+                }
+            }
         }
     }
     // Back-fill lifeNumber for entries from old saves that lack it
@@ -798,7 +864,7 @@ function scaleEffectForLife(rawValue, requestedDuration) {
     };
 }
 
-function applyStoryEffect(effect) {
+function applyStoryEffect(effect, level) {
     if (!effect || !effect.type) return;
     initStoryLog();
 
@@ -810,7 +876,9 @@ function applyStoryEffect(effect) {
         value: scaled.value,
         duration: scaled.duration,
         applied: true,
-        scaled: true
+        scaled: true,
+        level: level || 0,
+        source: effect.source || ''
     };
 
     console.log('[Story] Life ' + getCurrentLifeNumber() + ' effect:', JSON.stringify(storyEffect), 'Total effects:', gameData.storyEffects.length + 1);
@@ -959,7 +1027,12 @@ function describeEffect(effect) {
     };
     var typeName = t(typeMap[effect.type] || effect.type);
     var durName = t(durationMap[effect.duration] || effect.duration);
-    var targetText = effect.target ? ' (' + tName(effect.target) + ')' : '';
+    var targetText = '';
+    var sourceName = effect.target || effect.source || '';
+    if (sourceName) {
+        var lvlPart = effect.level ? ' ' + effect.level + t('level_word') : '';
+        targetText = ' (' + tName(sourceName) + lvlPart + ')';
+    }
     var displayValue = Math.min(Math.max(parseFloat(effect.value) || 0.05, 0.01), 0.20);
     var valueText = '+' + (displayValue * 100).toFixed(0) + '%';
     return '✦ ' + typeName + targetText + ': ' + valueText + ' [' + durName + ']';
@@ -1086,12 +1159,74 @@ function updateActiveEffectsUI() {
         return;
     }
 
+    // Group effects by type
+    var categories = ['xp_multiplier', 'income_bonus', 'happiness_boost', 'lifespan_bonus'];
+    var typeMap = {
+        xp_multiplier:   'effect_xp_multiplier',
+        income_bonus:    'effect_income_bonus',
+        happiness_boost: 'effect_happiness_boost',
+        lifespan_bonus:  'effect_lifespan_bonus'
+    };
+    var groups = {};
+    for (var i = 0; i < categories.length; i++) groups[categories[i]] = [];
     for (var i = 0; i < gameData.storyEffects.length; i++) {
         var eff = gameData.storyEffects[i];
-        var div = document.createElement('div');
-        div.className = 'effect-item';
-        div.textContent = describeEffect(eff);
-        container.appendChild(div);
+        var key = eff.type || 'xp_multiplier';
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(eff);
+    }
+
+    for (var ci = 0; ci < categories.length; ci++) {
+        var cat = categories[ci];
+        var items = groups[cat];
+        if (!items || items.length === 0) continue;
+
+        // Compute total for this category
+        var total = 0;
+        for (var j = 0; j < items.length; j++) total += parseFloat(items[j].value) || 0;
+
+        var section = document.createElement('div');
+        section.className = 'effect-group';
+
+        // Header row — click to toggle
+        var header = document.createElement('div');
+        header.className = 'effect-group-header';
+        var arrow = document.createElement('span');
+        arrow.className = 'effect-group-arrow collapsed';
+        arrow.textContent = '▶';
+        var label = document.createElement('span');
+        label.textContent = t(typeMap[cat]);
+        var total_span = document.createElement('span');
+        total_span.className = 'effect-group-total';
+        total_span.textContent = '+' + (total * 100).toFixed(0) + '%  (' + items.length + ')';
+
+        header.appendChild(arrow);
+        header.appendChild(label);
+        header.appendChild(total_span);
+
+        // Detail list — collapsed by default
+        var detail = document.createElement('div');
+        detail.className = 'effect-group-detail collapsed';
+        for (var j = 0; j < items.length; j++) {
+            var row = document.createElement('div');
+            row.className = 'effect-item';
+            row.textContent = describeEffect(items[j]);
+            detail.appendChild(row);
+        }
+
+        // Toggle on header click
+        (function(arrowEl, detailEl) {
+            header.addEventListener('click', function() {
+                var isCollapsed = detailEl.classList.contains('collapsed');
+                detailEl.classList.toggle('collapsed', !isCollapsed);
+                arrowEl.classList.toggle('collapsed', !isCollapsed);
+                arrowEl.textContent = isCollapsed ? '▼' : '▶';
+            });
+        })(arrow, detail);
+
+        section.appendChild(header);
+        section.appendChild(detail);
+        container.appendChild(section);
     }
 }
 

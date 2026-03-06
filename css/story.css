@@ -181,15 +181,94 @@ body:not(.dark) .story-life-tab:hover {
    Active Effects
    ============================================================ */
 
+.effect-group {
+    margin-bottom: 8px;
+    border: 1px solid #2a2a2a;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.effect-group-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #55a630;
+    transition: background 0.15s;
+}
+
+.effect-group-header:hover {
+    background: rgba(85, 166, 48, 0.1);
+}
+
+.effect-group-arrow {
+    font-size: 0.75em;
+    width: 12px;
+    flex-shrink: 0;
+    transition: transform 0.15s;
+}
+
+.effect-group-total {
+    margin-left: auto;
+    font-weight: normal;
+    color: #aaa;
+    font-size: 0.85em;
+}
+
+.effect-group-detail {
+    padding: 0 12px;
+    max-height: 400px;
+    overflow: hidden;
+    transition: max-height 0.2s ease, padding 0.2s ease;
+}
+
+.effect-group-detail.collapsed {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
 .effect-item {
     color: #55a630;
     padding: 4px 0;
-    font-size: 0.9em;
+    font-size: 0.85em;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.effect-item:last-child {
+    border-bottom: none;
 }
 
 /* ============================================================
    Light mode overrides
    ============================================================ */
+
+body:not(.dark) .effect-group {
+    border-color: #ddd;
+}
+
+body:not(.dark) .effect-group-header {
+    background: rgba(0, 0, 0, 0.03);
+    color: #2d6a1f;
+}
+
+body:not(.dark) .effect-group-header:hover {
+    background: rgba(45, 106, 31, 0.08);
+}
+
+body:not(.dark) .effect-group-total {
+    color: #666;
+}
+
+body:not(.dark) .effect-item {
+    color: #2d6a1f;
+    border-bottom-color: rgba(0,0,0,0.05);
+}
 
 body:not(.dark) #storyModal {
     background: #fff;
