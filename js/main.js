@@ -1172,7 +1172,6 @@ function updateUI() {
     hideEntities()
     updateText()
     updateMilestoneIndicator()
-    updateCreditDisplay()
 }
 
 function update() {

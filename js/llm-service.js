@@ -16,7 +16,7 @@ var MILESTONE_STORY_COST = 1;
 var REBIRTH_STORY_COST = 2;
 
 // Milestone levels that trigger full LLM story generation
-const milestoneLevels = [10, 25, 50, 100, 200, 500, 1000];
+const milestoneLevels = [1, 10, 25, 50, 100, 200, 500, 1000];
 
 // Throttle: prevent multiple simultaneous requests
 var llmRequestPending = false;
@@ -314,9 +314,9 @@ function updateMilestoneIndicator() {
         el.textContent = '';
         return;
     }
-    // Show next milestone for current job and skill
+    // Show next milestone for current job (always) and skill (only when BYOK is active)
     var jobNext = getNextMilestone(gameData.currentJob.level);
-    var skillNext = getNextMilestone(gameData.currentSkill.level);
+    var skillNext = (llmConfig.useOwnKey && llmConfig.ownApiKey) ? getNextMilestone(gameData.currentSkill.level) : null;
     var parts = [];
     if (jobNext) parts.push(tName(gameData.currentJob.name) + ': ' + gameData.currentJob.level + '/' + jobNext);
     if (skillNext) parts.push(tName(gameData.currentSkill.name) + ': ' + gameData.currentSkill.level + '/' + skillNext);
@@ -431,12 +431,43 @@ function _popcount(n) {
 
 function _levelBand(level) {
     if (level <= 10)  return 'low';
-    if (level <= 50)  return 'mid';
+    if (level <= 49)  return 'mid';
     return 'high';
 }
 
 function _jobToSnake(taskName) {
     return taskName.toLowerCase().replace(/\s+/g, '_');
+}
+
+function _randomizeEffect(baseEffect, taskName) {
+    // Deterministic seed per task+level so same milestone always gets same type/value
+    var seed = 0;
+    var str = taskName + (baseEffect.target || '') + (baseEffect.type || '');
+    for (var i = 0; i < str.length; i++) { seed = (seed * 31 + str.charCodeAt(i)) | 0; }
+    seed = Math.abs(seed);
+
+    var types = ['xp_multiplier', 'income_bonus', 'happiness_boost', 'lifespan_bonus'];
+    var type = types[seed % types.length];
+
+    // Value: pick from a small set of meaningful values
+    var values = [0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.10];
+    var value = values[(seed >> 3) % values.length];
+
+    // Duration: permanent is possible in all lives but rarer in early ones
+    var lifeNum = getCurrentLifeNumber();
+    var durations = lifeNum <= 2
+        ? ['life', 'life', 'life', 'life', 'life', 'permanent']
+        : lifeNum <= 4
+            ? ['life', 'life', 'life', 'permanent', 'permanent']
+            : ['life', 'life', 'permanent', 'permanent', 'permanent'];
+    var duration = durations[(seed >> 6) % durations.length];
+
+    return {
+        type: type,
+        target: baseEffect.target || taskName,
+        value: value,
+        duration: duration
+    };
 }
 
 async function _loadFallbackStories() {
@@ -507,6 +538,7 @@ async function generateMilestoneStory(taskName, taskType, newLevel) {
         var result = await callLLM(prompt);
 
         if (result && result.story) {
+            var scaledEffect = result.effect ? applyStoryEffect(result.effect) : null;
             addStoryEntry({
                 type: 'milestone',
                 taskName: taskName,
@@ -514,11 +546,10 @@ async function generateMilestoneStory(taskName, taskType, newLevel) {
                 level: newLevel,
                 day: gameData.days,
                 text: result.story,
-                effect: result.effect || null
+                effect: scaledEffect || null
             });
-            if (result.effect) applyStoryEffect(result.effect);
             spendCredits(MILESTONE_STORY_COST);
-            showStoryModal(tName(taskName) + ' — ' + t('level_word') + ' ' + newLevel, result.story, result.effect);
+            showStoryModal(tName(taskName) + ' — ' + t('level_word') + ' ' + newLevel, result.story, scaledEffect);
             return;
         }
     }
@@ -527,7 +558,8 @@ async function generateMilestoneStory(taskName, taskType, newLevel) {
     await _loadFallbackStories();
     var fallback = _pickFallbackStory(taskName, newLevel);
     if (fallback) {
-        var fallbackEffect = fallback.effect || null;
+        var rawFallbackEffect = fallback.effect ? _randomizeEffect(fallback.effect, taskName) : null;
+        var scaledFallbackEffect = rawFallbackEffect ? applyStoryEffect(rawFallbackEffect) : null;
         addStoryEntry({
             type: 'milestone',
             taskName: taskName,
@@ -535,10 +567,9 @@ async function generateMilestoneStory(taskName, taskType, newLevel) {
             level: newLevel,
             day: gameData.days,
             text: fallback.text,
-            effect: fallbackEffect
+            effect: scaledFallbackEffect || null
         });
-        if (fallbackEffect) applyStoryEffect(fallbackEffect);
-        showStoryModal(tName(taskName) + ' — ' + t('level_word') + ' ' + newLevel, fallback.text, fallbackEffect);
+        showStoryModal(tName(taskName) + ' — ' + t('level_word') + ' ' + newLevel, fallback.text, scaledFallbackEffect);
     }
 }
 
@@ -557,6 +588,7 @@ async function generateRebirthReview() {
     var result = await callLLM(prompt);
 
     if (result && result.story) {
+        var scaledRebirthEffect = result.effect ? applyStoryEffect(result.effect) : null;
         addStoryEntry({
             type: 'rebirth_review',
             taskName: '',
@@ -565,21 +597,41 @@ async function generateRebirthReview() {
             day: gameData.days,
             lifeNumber: lifeNum,
             text: result.story,
-            effect: result.effect || null
+            effect: scaledRebirthEffect || null
         });
-
-        if (result.effect) {
-            applyStoryEffect(result.effect);
-        }
 
         spendCredits(REBIRTH_STORY_COST);
 
-        // Update the already-open modal with real content
-        showStoryModal(t('story_life_review') + ' — ' + getLifeLabel(lifeNum), result.story, result.effect);
+        showStoryModal(t('story_life_review') + ' — ' + getLifeLabel(lifeNum), result.story, scaledRebirthEffect);
         if (typeof updateStoryLogUI === 'function') updateStoryLogUI();
-    } else {
-        hideStoryModal();
+        return;
     }
+
+    // Fallback: use pre-generated rebirth story
+    await _loadFallbackStories();
+    if (_fallbackStories) {
+        var rebirthKeys = ['rebirth_1', 'rebirth_2', 'rebirth_3'];
+        var key = rebirthKeys[((gameData.rebirthOneCount || 0) + (gameData.rebirthTwoCount || 0)) % rebirthKeys.length];
+        var fallback = _fallbackStories[key] || null;
+        if (fallback) {
+            var scaledFallbackEffect = fallback.effect ? applyStoryEffect(_randomizeEffect(fallback.effect, key)) : null;
+            addStoryEntry({
+                type: 'rebirth_review',
+                taskName: '',
+                taskType: '',
+                level: 0,
+                day: gameData.days,
+                lifeNumber: lifeNum,
+                text: fallback.text,
+                effect: scaledFallbackEffect || null
+            });
+            showStoryModal(t('story_life_review') + ' — ' + getLifeLabel(lifeNum), fallback.text, scaledFallbackEffect);
+            if (typeof updateStoryLogUI === 'function') updateStoryLogUI();
+            return;
+        }
+    }
+
+    hideStoryModal();
 }
 
 // Queue-based story processing to avoid parallel API calls
@@ -630,10 +682,25 @@ function initStoryLog() {
     if (!gameData.storyEffects) {
         gameData.storyEffects = [];
     }
-    // Sanitize any effects with out-of-range values from old saves
+    // Migrate old unscaled effects: re-apply scaleEffectForLife so display matches actual game values
     for (var i = 0; i < gameData.storyEffects.length; i++) {
         var eff = gameData.storyEffects[i];
-        eff.value = Math.min(Math.max(parseFloat(eff.value) || 0.05, 0.01), 0.20);
+        if (!eff.scaled) {
+            var scaled = scaleEffectForLife(parseFloat(eff.value) || 0.05, eff.duration);
+            eff.value = scaled.value;
+            eff.duration = scaled.duration;
+            eff.scaled = true;
+        }
+    }
+    // Migrate unscaled effects on old storyLog entries so card display matches actual applied values
+    for (var i = 0; i < gameData.storyLog.length; i++) {
+        var entry = gameData.storyLog[i];
+        if (entry.effect && !entry.effect.scaled) {
+            var s = scaleEffectForLife(parseFloat(entry.effect.value) || 0.05, entry.effect.duration);
+            entry.effect.value = s.value;
+            entry.effect.duration = s.duration;
+            entry.effect.scaled = true;
+        }
     }
     // Back-fill lifeNumber for entries from old saves that lack it
     var life = 1;
@@ -742,12 +809,14 @@ function applyStoryEffect(effect) {
         target: resolveTargetName(effect.target),
         value: scaled.value,
         duration: scaled.duration,
-        applied: true
+        applied: true,
+        scaled: true
     };
 
     console.log('[Story] Life ' + getCurrentLifeNumber() + ' effect:', JSON.stringify(storyEffect), 'Total effects:', gameData.storyEffects.length + 1);
     gameData.storyEffects.push(storyEffect);
     recalculateStoryMultipliers();
+    return storyEffect;
 }
 
 function getStoryXpMultiplier(taskName) {
